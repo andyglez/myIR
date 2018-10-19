@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+    <div class="content">
+        <div id="video hero" class="hero" style="width: 1903px; height: 768px;">
+            <video autoplay="" loop="" muted="" style="width: 1903px; height: 768px">
+                <source src="{{ url_for('static', filename='data/final.mp4') }}" type="video/mp4">
+            </video>
+            <div class="container">
+                <h1>
+                    <span class="heading">
+                        <a href="{{ url_for('static', filename='data/s_report.pdf') }}" type="text/pdf">
+                            Theoretical Paper
+                        </a>
+                        /
+                        <a href="{{ url_for('static', filename='data/slideshow.pptx') }}" type="text/pptx">
+                            Slideshow
+                        </a>
+                        /
+                        <a href="{{ url_for('static', filename='data/final.mp4') }}" type="text/pptx">
+                            Video
+                        </a>
+                        /
+                        <a href="{{ url_for('static', filename='data/p_report.pdf') }}" type="text/pdf">
+                            Practical Paper
+                        </a>
+                    </span>
+                </h1>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
