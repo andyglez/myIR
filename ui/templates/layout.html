@@ -18,7 +18,7 @@
         <!-- CSS -->
         <link href="{{ url_for('static', filename='css/app.min.1.css') }}" rel="stylesheet">
         <link href="{{ url_for('static', filename='css/app.min.2.css') }}" rel="stylesheet">
-        <link href="{{ url_for('static', filename='css/app.my.clock.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/app.my.clock1.css') }}" rel="stylesheet">
         
         <!-- JavaScrpit Libraries -->
         <script src="{{ url_for('static', filename='vendors/bower_components/jquery/dist/jquery.min.js') }}"></script>
@@ -42,11 +42,11 @@
     </head>
 
     <div class=content>
-        <header id = "header" class="clearfix" data-current-skin="blue">
+        <header id = "header" class="clearfix" data-current-skin="blue" style="background-color:black; color:blue">
             <ul class="header-inner">
                 <li class="logo hidden-xs">
                     <a href="{{ url_for('layout') }}">
-                        <img src="{{ url_for('static', filename='images/icons/todo.png') }}"></img>
+                        <img src="{{ url_for('static', filename='images/icons/server.png') }}"></img>
                         my IR
                     </a>
                 </li>
