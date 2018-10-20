@@ -41,42 +41,40 @@
         <script src="{{ url_for('static', filename='js/time.js') }}"></script>
     </head>
 
-    <body>
-        <div class=content>
-            <header id = "header" class="clearfix" data-current-skin="blue">
-                <ul class="header-inner">
-                    <li class="logo hidden-xs">
-                        <a href="{{ url_for('layout') }}">
-                            <img src="{{ url_for('static', filename='images/icons/todo.png') }}"></img>
-                            my IR
-                        </a>
-                    </li>
-                    <li class="logo hidden-xs">
-                        <a href="https://github.com/andyglez/myIR">
-                            <img src="{{ url_for('static', filename='images/icons/source.png') }}"></img>
-                            GitHub
-                        </a>
-                    </li>
-                    <li class="logo hidden-xs">
-                            <a href="{{ url_for('about') }}">
-                                <img src="{{ url_for('static', filename='images/icons/contributing.png') }}"></img>
-                                About
-                            </a>
-                        </li>
-                    <li class="pull-right">
-                        <element class="clock">
-                            <element id="Date"></element>
-                            <ul>
-                                <li id="hours"></li>
-                                <li id="point">:</li>
-                                <li id="min"></li>
-                                <li id="point">:</li>
-                                <li id="sec"></li>
-                            </ul>
-                        </element>
-                    </li>
-                </ul>
-            </header>
-            {% block body %}{% endblock %}                                
-        </div>
-    </body>
+    <div class=content>
+        <header id = "header" class="clearfix" data-current-skin="blue">
+            <ul class="header-inner">
+                <li class="logo hidden-xs">
+                    <a href="{{ url_for('layout') }}">
+                        <img src="{{ url_for('static', filename='images/icons/todo.png') }}"></img>
+                        my IR
+                    </a>
+                </li>
+                <li class="logo hidden-xs">
+                    <a href="https://github.com/andyglez/myIR">
+                        <img src="{{ url_for('static', filename='images/icons/source.png') }}"></img>
+                        GitHub
+                    </a>
+                </li>
+                <li class="logo hidden-xs">
+                    <a href="{{ url_for('about') }}">
+                        <img src="{{ url_for('static', filename='images/icons/contributing.png') }}"></img>
+                        About
+                    </a>
+                </li>
+                <li class="pull-right">
+                    <element class="clock">
+                        <element id="Date"></element>
+                        <ul>
+                            <li id="hours"></li>
+                            <li id="point">:</li>
+                            <li id="min"></li>
+                            <li id="point">:</li>
+                            <li id="sec"></li>
+                        </ul>
+                    </element>
+                </li>
+            </ul>
+        </header>
+        {% block body %}{% endblock %}                                
+    </div>
