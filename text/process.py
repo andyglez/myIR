@@ -1,4 +1,5 @@
 import sys
+import io
 import json
 
 from nltk.corpus import stopwords
@@ -10,6 +11,11 @@ def process(file):
     terms = clean(file)
     result = {}
     result['terms'] = terms
+    with io.open(('output.json'), 'w', encoding='utf8') as outfile:
+        text = json.dumps(result,
+                    indent=4, sort_keys=True,
+                    separators=(',', ': '), ensure_ascii=False)
+        outfile.write(text)
     return result
 
 def clean(file):
