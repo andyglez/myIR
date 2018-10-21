@@ -42,5 +42,28 @@
             </button>
         </form>
     </div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Results</h2>
+            </div>
+            <div class="card-body card-padding">
+                <div class="listview">
+                    {% for item in session.results %}
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <a href="{{ session['path'] + item['document']}} ">{{ item['document'] }}</a>
+                                </div>
+                                <small class="lv-small">{{ item['match'] }}</small>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}
