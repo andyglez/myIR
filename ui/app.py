@@ -9,6 +9,8 @@ if __name__ == '__main__':
 
 @app.route('/', methods=['GET','POST'])
 def layout():
+    session['path'] = ''
+    session['build'] = False
     if 'user' in session:
         return redirect(url_for('index'))
     session['user'] = 'andy'    
@@ -17,21 +19,16 @@ def layout():
 @app.route('/index', methods=['GET','POST'])
 def index():
     if request.method == 'POST':
-        if 'path' in session:
-            if request.form['path'] == session['path']:
-                if 'build' in session and session['build'] == True:
-                    flash('Model is already constructed', 'warning')
-                else:
-                    session['build'] = False
+        if os.path.exists(request.form['path']):
+            if session['build'] == True:
+                flash('Model is already constructed, touch again for rebuilding in a diferent path', 'message')
+                session['build'] = False
             else:
                 session['build'] = True
                 session['path'] = request.form['path']
-                if os.path.exists(session['path']):
-                    flash('Ok it does exist', 'message')
-                else:
-                    flash('Path is wrong', 'error')
+                flash('Path is valid, model is being constructed', 'message')
         else:
-            session['path'] = request.form['path']
+            flash('Path is Wrong, no new model for construction', 'Error')
         return redirect(url_for('index'))
     return render_template('index.html')
 
