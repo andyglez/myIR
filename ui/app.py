@@ -13,6 +13,8 @@ if __name__ == '__main__':
 def layout():
     session['path'] = ''
     session['build'] = False
+    session['query'] = False
+    session['results'] = []
     session['user'] = 'andy'    
     return redirect(url_for('index'))
 
@@ -45,14 +47,17 @@ def build():
     return redirect(url_for('static', filename='json/action.json'))
 
 def query():
-    if session['build']:
+    if session['query'] and session['build']:
+        readjson()        
+    elif session['build']:
         result = {"action" : "query",
                 "query" : request.form['query'],
                 "count": request.form['count']}
+        session['query'] = True
         printjson(result)
     else:
         flash('No Model has been created')
-    return redirect(url_for('static', filename='json/action.json'))
+    return redirect(url_for('index'))
 
 def printjson(data):
     with io.open(os.path.curdir + url_for('static', filename='json/action.json'), 'w', encoding='utf8') as outfile:
@@ -60,3 +65,10 @@ def printjson(data):
                     indent=4, sort_keys=True,
                     separators=(',', ': '), ensure_ascii=False)
         outfile.write(text)
+
+def readjson():
+    with io.open(os.path.curdir + url_for('static', filename='json/action.json'), 'r', encoding='utf8') as infile:
+        data = json.load(infile)
+        if data['action'] == 'report' and data['success']:
+            session['results'] = data['results']
+            session['query'] = False
