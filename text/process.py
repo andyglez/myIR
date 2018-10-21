@@ -8,7 +8,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from string import punctuation
 
 def process(file):
-    terms = clean(file)
+    terms = clean(file['data'])
     result = {}
     result['terms'] = terms
     with io.open(('output.json'), 'w', encoding='utf8') as outfile:
@@ -39,5 +39,7 @@ def clean(file):
 
 
 if __name__ == '__main__':
-    for json in sys.argv[1:]:
-        process(json)
+    for file in sys.argv[1:]:
+        with io.open(file) as data_file:
+            data = json.load(data_file)
+            process(data)
