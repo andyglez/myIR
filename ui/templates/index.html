@@ -15,6 +15,19 @@
                 {% endif %}
             {% endwith %}
             <form role="form" method="post">
+                {% if session['build'] %}
+                <button type="submit" class="btn btn-primary btn-icon-text waves-effect" style="background-color:black" name="another">
+                    <i class="zmdi zmdi-arrow-forward"></i>
+                    Build Another
+                </button>
+                {% endif %}
+                {% if session['to_build'] %}
+                <button type="submit" class="btn btn-primary btn-icon-text waves-effect" style="background-color:black" name="update">
+                    <i class="zmdi zmdi-arrow-forward"></i>
+                    Update
+                </button>
+                {% endif %}
+                {% if not(session['build'] or session['to_build']) %}
                 <div class="form-group fg-line">
                     <input type="text" class="form-control input-sm" placeholder="Path" name="path">
                 </div>
@@ -22,6 +35,7 @@
                     <i class="zmdi zmdi-arrow-forward"></i>
                     Build
                 </button>
+                {% endif %}
             </form>
         </div>
     </section>
@@ -43,6 +57,7 @@
             </button>
         </form>
     </div>
+    {% if session['query'] %}
     <div class="container">
         <div class="card">
             <div class="card-header">
@@ -66,6 +81,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </section>
 {% endif %}
 {% endblock %}
