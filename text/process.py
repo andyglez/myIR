@@ -1,6 +1,8 @@
 import sys
 import io
 import json
+import os
+from time import time
 
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -11,7 +13,8 @@ def process(file):
     terms = clean(file['data'])
     result = {}
     result['terms'] = terms
-    with io.open(('output.json'), 'w', encoding='utf8') as outfile:
+    result['time'] = time()
+    with io.open(os.path.pardir + '/json/out.text.json', 'w', encoding='utf8') as outfile:
         text = json.dumps(result,
                     indent=4, sort_keys=True,
                     separators=(',', ': '), ensure_ascii=False)
@@ -39,7 +42,9 @@ def clean(file):
 
 
 if __name__ == '__main__':
-    for file in sys.argv[1:]:
-        with io.open(file) as data_file:
+    try:
+        with io.open(os.path.pardir + '/json/in.text.json') as data_file:
             data = json.load(data_file)
             process(data)
+    except:
+        pass
