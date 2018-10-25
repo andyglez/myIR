@@ -1,4 +1,3 @@
-import sys
 import io
 import json
 import os
@@ -45,6 +44,7 @@ if __name__ == '__main__':
     try:
         with io.open(os.path.pardir + '/json/in.text.json') as data_file:
             data = json.load(data_file)
-            process(data)
+            if time() <= data['time'] + 20:
+                process(data)
     except:
         pass
