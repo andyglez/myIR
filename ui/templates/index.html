@@ -27,6 +27,7 @@
     </section>
 </section>
 
+{% if session['build'] %}
 <section>
     <div class="container">
         <form role="form" method="post">
@@ -66,4 +67,5 @@
         </div>
     </div>
 </section>
+{% endif %}
 {% endblock %}
