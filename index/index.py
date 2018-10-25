@@ -4,38 +4,35 @@ import os
 from time import time
 
 
-def process(data):
+def process(data, index):
     if data['action'] == 'create':
-        create(data['data'])
-    elif data['action'] == 'add':
-        add(data['key'], data['value'])
-    elif data['action'] == 'update':
-        update(data['key'], data['value'])
+        index = data['data']
+    elif data['action'] == 'add' or data['action'] == 'update':
+        index[data['key']] = data['value']
     elif data['action'] == 'delete':
-        delete(data['key'])
+        index.pop(data['key'])
     else:
-        get('key')
+        get(data['key'], index)
 
-def create(data):
-    return 0    
-
-def add(key, value):
-    return 0
-
-def update(key, value):
-    return 0
-
-def delete(key):
-    return 0
-
-def get(key):
-    return 0
+def get(key, index):
+    result = {}
+    result['success'] = True
+    result['value'] = index[key]
+    result['time'] = time()
+    with io.open(os.path.pardir + '/json/out.index.json', 'w', encoding='utf8') as outfile:
+        text = json.dumps(result,
+                    indent=4, sort_keys=True,
+                    separators=(',', ': '), ensure_ascii=False)
+        outfile.write(text)
+    return result
 
 if __name__ == '__main__':
-    try:
-        with io.open(os.path.pardir + '/json/in.index.json') as data_file:
-            data = json.load(data_file)
-            if time() <= data['time'] + 20:
-                process(data)
-    except:
-        pass
+    index = {}
+    while True:
+        try:
+            with io.open(os.path.pardir + '/json/in.index.json') as data_file:
+                data = json.load(data_file)
+                if time() <= data['time'] + 20:
+                    process(data, index)
+        except:
+            pass

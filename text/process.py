@@ -41,10 +41,11 @@ def clean(file):
 
 
 if __name__ == '__main__':
-    try:
-        with io.open(os.path.pardir + '/json/in.text.json') as data_file:
-            data = json.load(data_file)
-            if time() <= data['time'] + 20:
-                process(data)
-    except:
-        pass
+    while True:
+        try:
+            with io.open(os.path.pardir + '/json/in.text.json') as data_file:
+                data = json.load(data_file)
+                if time() <= data['time'] + 20:
+                    process(data)
+        except:
+            pass
