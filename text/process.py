@@ -43,7 +43,7 @@ def clean(file):
 if __name__ == '__main__':
     while True:
         try:
-            with io.open(os.path.pardir + '/json/in.text.json') as data_file:
+            with io.open(os.path.pardir + '/json/in.text.json', 'r', encoding='utf8') as data_file:
                 data = json.load(data_file)
                 if time() <= data['time'] + 20:
                     process(data)
