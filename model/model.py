@@ -4,6 +4,19 @@ import os
 from time import time
 
 def process(data, state, output):
+    if state == 1:
+        return get_terms(data, output)
+    if state == 2:
+        return combine_terms(data, output)
+    return report(data, output)
+
+def get_terms(data, output):
+    return True
+
+def combine_terms(data, output):
+    return True
+
+def report(data, output):
     return True
 
 if __name__ == '__main__':
