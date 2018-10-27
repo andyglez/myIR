@@ -7,13 +7,16 @@ def process(data, state, output):
     if state == 1:
         return get_terms(data, output)
     if state == 2:
-        return combine_terms(data, output)
+        return analise_model(data['terms'], output)
     return report(data, output)
 
 def get_terms(data, output):
     if data['action'] == 'build':
+        globals()['is_query'] = False
+        globals()['path'] = data['path']
         return scan(data['path'], output)
     globals()['query_count'] = data['count']
+    globals()['is_query'] = True
     return terms(data['query'], output)
 
 def scan(path, output):
@@ -35,7 +38,13 @@ def terms(plain, output):
     printjson(result, output)
     return True
 
-def combine_terms(data, output):
+def analise_model(terms, output):
+    if globals()['is_query']:
+        return query(terms, output)
+    
+    return True
+
+def query(terms, output):
     return True
 
 def report(data, output):
