@@ -11,6 +11,28 @@ def process(data, state, output):
     return report(data, output)
 
 def get_terms(data, output):
+    if data['action'] == 'build':
+        return scan(data['path'], output)
+    globals()['query_count'] = data['count']
+    return terms(data['query'], output)
+
+def scan(path, output):
+    try:
+        plain = ''
+        for file in os.scandir(path):#[x for x in os.scandir(path) if os.path.isfile(x)]:
+            with io.open(file, 'r', encoding='utf8') as text:
+                for line in text.readlines():
+                    plain = plain + line
+        return terms(plain, output)
+    except:
+        return False
+    
+
+def terms(plain, output):
+    result = {}
+    result['action'] = 'process'
+    result['data'] = plain
+    printjson(result, output)
     return True
 
 def combine_terms(data, output):
@@ -18,6 +40,14 @@ def combine_terms(data, output):
 
 def report(data, output):
     return True
+
+def printjson(data, output):
+    with io.open(output, 'w', encoding='utf8') as outfile:
+        data['time'] = time()
+        text = json.dumps(data,
+                    indent=4, sort_keys=True,
+                    separators=(',', ': '), ensure_ascii=False)
+        outfile.write(text)
 
 if __name__ == '__main__':
     status = 1
