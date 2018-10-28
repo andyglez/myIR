@@ -4,6 +4,11 @@ def list_concat(x, y):
         ret.append(comb)
     return ret
 
+def str_concat(x):
+    result = ''
+    for word in x:
+        result = result + word + ' '
+    return result
 
 def permutations(l):
     for item in l:

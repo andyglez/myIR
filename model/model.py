@@ -2,6 +2,8 @@ import json
 import io
 import os
 from time import time
+import combine
+import math
 
 def process(data, state, output):
     if state == 1:
@@ -41,14 +43,73 @@ def terms(plain, output):
 def analise_model(terms, output):
     if globals()['is_query']:
         return query(terms, output)
-    
+    result = {}
+    result['action'] = 'create'
+    result['data'] = []
+    total = 5 if terms.__len__() >= 5 else terms.__len__() - 1
+    n = terms.__len__()
+    perm = math.factorial(n)
+    for i in range(1, total):
+        k = total - i
+        variations = perm / math.factorial(n - k)
+        for cb in combine.combinations(terms, total - i):
+            index = {}
+            word = combine.str_concat(cb)
+            index['key'] = word
+            index['layer'] = i
+            index['idf'] = get_idf(word)
+            index['documents'] = get_tf(word, variations)
+            if i < total - 1:
+                index['next'] = []
+                count = math.factorial(total - i)
+                for prox in combine.combinations(cb, total - (i + 1)):
+                    edge = {}
+                    edge['activation'] = math.sqrt(count) / count
+                    edge['name'] = combine.str_concat(prox)
+                    index['next'].append(edge)
+            result['data'].append(index)
+    printjson(result, output)
     return True
 
+def get_tf(word, total):
+    result = []
+    for f in os.scandir(globals()['path']):
+        with io.open(f, 'r', encoding='utf8') as file:
+            text = ''
+            for line in file.readlines():
+                text = text + line + ' '
+            data = {}
+            data['name'] = f
+            data['tf'] = text.count(word) / total
+            result.append(data)
+    return result
+
+def get_idf(word):
+    count_docs = 0
+    count_exis = 0
+    for f in os.scandir(globals()['path']):
+        with io.open(f, 'r', encoding='utf8') as file:
+            count_docs = count_docs + 1
+            text = ''
+            for line in file.readlines():
+                text = text + line + ' '
+            if text.count(word) > 0:
+                count_exis = count_exis + 1
+    return math.log10(count_docs / count_exis)
+
 def query(terms, output):
+    result = {}
+    result['action'] = 'get'
+    result['key'] = combine.str_concat(terms)
+    printjson(result, output)
     return True
 
 def report(data, output):
-    return True
+    if data['success']:
+        data['action'] = 'report'
+        printjson(data, output)
+        return True
+    return False
 
 def printjson(data, output):
     with io.open(output, 'w', encoding='utf8') as outfile:
