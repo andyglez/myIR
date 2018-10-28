@@ -31,7 +31,7 @@ def index():
     if not 'new' in session:
         return layout()
     if request.method == 'GET':
-        get_index()
+        return get_index()
     elif request.method == 'POST':
         if 'update' in request.form:
             flash('Model is being constructed, please wait and try again') 
@@ -93,14 +93,22 @@ def get_index():
     in_data = readjson()
     if session['to_build'] and build_completion(in_data):
         session['build'] = True
+        session['in_ts'] = in_data['time']
         session['to_build'] = False
-        session['in_ts'] = in_data['time']
         flash('Model successfully built in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
-    elif session['query_sent'] and query_completion(in_data):
-        session['query'] = True
-        session['query_sent'] = False
-        session['in_ts'] = in_data['time']
-        flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
+    elif session['query_sent']:
+        if query_completion(in_data):
+            session['query'] = True
+            session['query_sent'] = False
+            session['in_ts'] = in_data['time']
+            flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
+            session['results'] = in_data['results']
+        elif not in_data['success']:
+            session['query_sent'] = False
+            session['results'] = []
+            session['in_ts'] = in_data['time']
+            flash('Sorry, no items match your query')
+    return render_template('index.html')
 
 def build_completion(data):
     return valid_time(data) and has_fields(data) and data['type'] == 'build' and data['success']

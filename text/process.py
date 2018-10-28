@@ -37,15 +37,21 @@ def clean(file):
 
     # only take words which are greater than 2 characters
     cleaned = [word for word in words if len(word) > 2]
-    return cleaned
+    last = []
+    for i in cleaned:
+        if last.count(i) == 0:
+            last.append(i)
+    return last
 
 
 if __name__ == '__main__':
+    t = time()
     while True:
         try:
             with io.open(os.path.pardir + '/json/in.text.json', 'r', encoding='utf8') as data_file:
                 data = json.load(data_file)
-                if time() <= data['time'] + 20:
+                if t < data['time']:
                     process(data)
+                    t = data['time']
         except:
             pass

@@ -27,7 +27,7 @@ def scan(path, output):
         for file in os.scandir(path):#[x for x in os.scandir(path) if os.path.isfile(x)]:
             with io.open(file, 'r', encoding='utf8') as text:
                 for line in text.readlines():
-                    plain = plain + line
+                    plain = plain + line + ' '
         return terms(plain, output)
     except:
         return False
@@ -46,10 +46,10 @@ def analise_model(terms, output):
     result = {}
     result['action'] = 'create'
     result['data'] = []
-    total = 5 if terms.__len__() >= 5 else terms.__len__() - 1
+    total = 5 if terms.__len__() >= 5 else terms.__len__()
     n = terms.__len__()
     perm = math.factorial(n)
-    for i in range(1, total):
+    for i in range(0, total):
         k = total - i
         variations = perm / math.factorial(n - k)
         for cb in combine.combinations(terms, total - i):
@@ -78,10 +78,12 @@ def get_tf(word, total):
             text = ''
             for line in file.readlines():
                 text = text + line + ' '
-            data = {}
-            data['name'] = f
-            data['tf'] = text.count(word) / total
-            result.append(data)
+            tf = text.count(word) / total
+            if tf > 0:
+                data = {}
+                data['name'] = file.name
+                data['tf'] = text.count(word) / total
+                result.append(data)
     return result
 
 def get_idf(word):
@@ -95,7 +97,7 @@ def get_idf(word):
                 text = text + line + ' '
             if text.count(word) > 0:
                 count_exis = count_exis + 1
-    return math.log10(count_docs / count_exis)
+    return 0 if count_exis == 0 else math.log10(count_docs / count_exis)
 
 def query(terms, output):
     result = {}
@@ -107,8 +109,10 @@ def query(terms, output):
 def report(data, output):
     if data['success']:
         data['action'] = 'report'
+        data['type'] = 'query' if globals()['is_query'] else 'build'
         printjson(data, output)
         return True
+    printjson({'action': 'report', 'success': False, 'type': 'query'}, output)
     return False
 
 def printjson(data, output):
@@ -123,6 +127,7 @@ if __name__ == '__main__':
     status = 1
     input_file = ''
     output_file = ''
+    t = time()
     while True:
         if status == 1:
             input_file  = os.path.pardir + '/json/out.ui.json'
@@ -137,10 +142,11 @@ if __name__ == '__main__':
         try:
             with io.open(input_file, 'r', encoding='utf8') as data_file:
                 data = json.load(data_file)
-                if time() <= data['time'] + 20:
+                if t < data['time']:
                     if process(data, status, output_file):
                         status = status + 1
                     if status > 3:
                         status = 1
+                    t = data['time']
         except:
             pass

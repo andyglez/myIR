@@ -8,7 +8,7 @@ def str_concat(x):
     result = ''
     for word in x:
         result = result + word + ' '
-    return result
+    return result[:-1]
 
 def permutations(l):
     for item in l:
