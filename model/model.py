@@ -111,9 +111,9 @@ def report(data, output):
         data['action'] = 'report'
         data['type'] = 'query' if globals()['is_query'] else 'build'
         printjson(data, output)
-        return True
-    printjson({'action': 'report', 'success': False, 'type': 'query'}, output)
-    return False
+    #else:
+    #    printjson({'action': 'report', 'success': False, 'type': 'error'}, output)
+    return data['success']
 
 def printjson(data, output):
     with io.open(output, 'w', encoding='utf8') as outfile:
@@ -127,26 +127,37 @@ if __name__ == '__main__':
     status = 1
     input_file = ''
     output_file = ''
-    t = time()
+    t1 = time()
     while True:
-        if status == 1:
-            input_file  = os.path.pardir + '/json/out.ui.json'
-            output_file = os.path.pardir + '/json/in.text.json'
-        elif status == 2:
-            input_file = os.path.pardir + '/json/out.text.json'
-            output_file = os.path.pardir + '/json/in.index.json'
-        else:
-            input_file = os.path.pardir + '/json/out.index.json'
-            output_file = os.path.pardir + '/json/in.ui.json'
-
         try:
-            with io.open(input_file, 'r', encoding='utf8') as data_file:
-                data = json.load(data_file)
-                if t < data['time']:
-                    if process(data, status, output_file):
-                        status = status + 1
-                    if status > 3:
-                        status = 1
-                    t = data['time']
-        except:
-            pass
+            ui_data = {}
+            with io.open(os.path.pardir + '/json/out.ui.json', 'r', encoding='utf8') as ui_to_text:
+                ui_data = json.load(ui_to_text)
+            if t1 < ui_data['time']:
+                t2 = time()
+                process(ui_data, 1, os.path.pardir + '/json/in.text.json')
+                t1 = ui_data['time']
+                while True:
+                    try:
+                        text_data = {}
+                        with io.open(os.path.pardir + '/json/out.text.json', 'r', encoding='utf8') as text_to_index:
+                            text_data = json.load(text_to_index)
+                        if 'time' in text_data and t2 < text_data['time']:
+                            t3 = time()
+                            process(text_data, 2, os.path.pardir + '/json/in.index.json')
+                            t2 = text_data['time']
+                            while True:
+                                try:
+                                    index_data = {}
+                                    with io.open(os.path.pardir + '/json/out.index.json', 'r', encoding='utf8') as index_to_ui:
+                                        index_data = json.load(index_to_ui)
+                                    if 'time' in index_data and t3 < index_data['time']:
+                                        process(index_data, 3, os.path.pardir + '/json/in.ui.json')
+                                        break
+                                except Exception as e3:
+                                    printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e3), "level": 3}, os.path.pardir + '/json/in.ui.json')
+                            break
+                    except Exception as e2:
+                        printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e2), "level": 2}, os.path.pardir + '/json/in.ui.json')
+        except Exception as e1:
+            printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e1)},  os.path.pardir + '/json/in.ui.json')

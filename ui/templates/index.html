@@ -66,18 +66,16 @@
             <div class="card-body card-padding">
                 <div class="listview">
                     {% for node in session['results']%}
-                        {% for item in node['documents'] %}
                             <a class="lv-item">
                                 <div class="media">
                                     <div class="media-body">
                                         <div class="lv-title">
-                                            <a href="file:///{{item['name']}}">{{ item['name'] }}</a>
+                                            <a href="file:///{{node['name']}}">{{ node['name'] }}</a>
                                         </div>
-                                        <small class="lv-small">{{ item['tf'] }}</small>
+                                        <small class="lv-small">{{ node['activation'] }}</small>
                                     </div>
                                 </div>
                             </a>
-                        {% endfor %}
                     {% endfor %}
                 </div>
             </div>

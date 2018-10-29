@@ -22,8 +22,8 @@ def get(key):
     while value.__len__() > 0:
         (activation, node) = value.pop()
         if 'next' in node:
-            for nxt in node:
-                value.append((activation + globals()['index'][nxt['activation']], globals()['index'][nxt['name']]))
+            for nxt in node['next']:
+                value.append((activation + nxt['activation'], globals()['index'][nxt['name']]))
         else:
             idf = node['idf']
             for document in node['documents']:
@@ -33,15 +33,29 @@ def get(key):
     return aux
 
 def sort(value):
-    aux = value.copy()
-    for i in range(aux.__len__()):
-        for j in range(i + 1, aux.__len__()):
-            a = aux[i]['activation']
-            b = aux[j]['activation']
-            if b < a:
-                temp = aux[i]
-                aux[i] = aux[j]
-                aux[j] = temp
+    aux = []
+    for node in value:
+        for doc in node['documents']:
+            temp = [t for t in aux if t['name'] == doc['name']]
+            if temp.__len__() == 0:
+                h = {}
+                h['activation'] = node['activation'] * doc['tf']
+                h['name'] = doc['name']
+                aux.append(h)
+            else:
+                for a in aux:
+                    if a['name'] == doc['name']:
+                        a['activation'] = a['activation'] + node['activation'] * doc['tf']
+
+    #aux = value.copy()
+    #for i in range(aux.__len__()):
+    #    for j in range(i + 1, aux.__len__()):
+    #        a = aux[i]['activation']
+    #        b = aux[j]['activation']
+    #        if b < a:
+    #            temp = aux[i]
+    #            aux[i] = aux[j]
+    #            aux[j] = temp
     return aux
 
 def create_index(data):
@@ -51,11 +65,11 @@ def create_index(data):
     return result
 
 def printjson(data, output):
+    data['time'] = time()
+    text = json.dumps(data,
+                      indent=4, sort_keys=True,
+                      separators=(',', ': '), ensure_ascii=False)
     with io.open(output, 'w', encoding='utf8') as outfile:
-        data['time'] = time()
-        text = json.dumps(data,
-                    indent=4, sort_keys=True,
-                    separators=(',', ': '), ensure_ascii=False)
         outfile.write(text)
 
 if __name__ == '__main__':
@@ -63,11 +77,12 @@ if __name__ == '__main__':
     t = time()
     while True:
         try:
+            data = {}
             with io.open(os.path.pardir + '/json/in.index.json', 'r', encoding='utf8') as data_file:
                 data = json.load(data_file)
-                if t < data['time']:
-                    process(data)
-                    t = time()
-        except:
-            printjson({'success': False}, os.path.pardir + '/json/out.index.json')
+            if t < data['time']:
+                process(data)
+                t = time()
+        except Exception as e:
+            printjson({'success': False, 'message': str(e)}, os.path.pardir + '/json/out.index.json')
             pass

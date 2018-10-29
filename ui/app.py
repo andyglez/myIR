@@ -33,6 +33,7 @@ def index():
     if request.method == 'GET':
         return get_index()
     elif request.method == 'POST':
+        session['results'] = []
         if 'update' in request.form:
             flash('Model is being constructed, please wait and try again') 
         elif 'another' in request.form:
@@ -71,7 +72,7 @@ def query():
         printjson(result)
     else:
         flash('No Model has been created')
-    return redirect(url_for('index'))
+    return 'query'#redirect(url_for('index'))
 
 def printjson(data):
     with io.open(os.path.pardir + '/json/out.ui.json', 'w', encoding='utf8') as outfile:
@@ -91,23 +92,28 @@ def readjson():
 
 def get_index():
     in_data = readjson()
-    if session['to_build'] and build_completion(in_data):
-        session['build'] = True
-        session['in_ts'] = in_data['time']
-        session['to_build'] = False
-        flash('Model successfully built in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
-    elif session['query_sent']:
-        if query_completion(in_data):
-            session['query'] = True
-            session['query_sent'] = False
-            session['in_ts'] = in_data['time']
-            flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
-            session['results'] = in_data['results']
-        elif not in_data['success']:
-            session['query_sent'] = False
-            session['results'] = []
-            session['in_ts'] = in_data['time']
-            flash('Sorry, no items match your query')
+    if valid_time(in_data) and has_fields(in_data):
+        if in_data['type'] == 'build':
+            if in_data['success']:
+                session['build'] = True
+                session['in_ts'] = in_data['time']
+                session['to_build'] = False
+                flash('Model successfully built in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
+            else:
+                flash('Task incomplete')
+        elif in_data['type'] == 'query':
+            if in_data['success']:
+                session['query'] = True
+                session['query_sent'] = False
+                session['in_ts'] = in_data['time']
+                flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
+                session['results'] = in_data['results']
+            else:
+                session['query_sent'] = False
+                session['query'] = False
+                # session['results'] = []
+                # session['in_ts'] = in_data['time']
+                flash('Sorry, no items match your query')
     return render_template('index.html')
 
 def build_completion(data):

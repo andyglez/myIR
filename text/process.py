@@ -48,10 +48,11 @@ if __name__ == '__main__':
     t = time()
     while True:
         try:
+            data = {}
             with io.open(os.path.pardir + '/json/in.text.json', 'r', encoding='utf8') as data_file:
                 data = json.load(data_file)
-                if t < data['time']:
-                    process(data)
-                    t = data['time']
+            if t < data['time']:
+                process(data)
+                t = data['time']
         except:
             pass
