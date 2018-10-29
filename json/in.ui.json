@@ -1,0 +1,24 @@
+{
+    "action": "report",
+    "results": [
+        {
+            "activation": 0.3230333766935214,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document1.txt"
+        },
+        {
+            "activation": 0.3230333766935214,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document2.txt"
+        },
+        {
+            "activation": 0.1076777922311738,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document3.txt"
+        },
+        {
+            "activation": 0.3230333766935214,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document4.txt"
+        }
+    ],
+    "success": true,
+    "time": 1540821242.667131,
+    "type": "query"
+}
