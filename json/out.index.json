@@ -1,22 +1,14 @@
 {
     "results": [
         {
-            "activation": 0.3230333766935214,
-            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document1.txt"
+            "activation": 0.08843111303823056,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Dean\\Sistemas de Informacion\\belief_network_model\\documents\\document3.txt"
         },
         {
-            "activation": 0.3230333766935214,
-            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document2.txt"
-        },
-        {
-            "activation": 0.1076777922311738,
-            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document3.txt"
-        },
-        {
-            "activation": 0.3230333766935214,
-            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs\\document4.txt"
+            "activation": 0.08843111303823056,
+            "name": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Dean\\Sistemas de Informacion\\belief_network_model\\documents\\document5.txt"
         }
     ],
     "success": true,
-    "time": 1540821242.6549404
+    "time": 1540824505.367307
 }

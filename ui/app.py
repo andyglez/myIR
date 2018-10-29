@@ -108,7 +108,8 @@ def get_index():
                 session['in_ts'] = in_data['time']
                 flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
                 if 'results' in in_data:
-                    session['results'] = in_data['results']
+                    aux = sort(in_data['results'])
+                    session['results'] = aux
             else:
                 session['query_sent'] = False
                 session['query'] = False
@@ -116,6 +117,16 @@ def get_index():
                 # session['in_ts'] = in_data['time']
                 flash('Sorry, no items match your query')
     return render_template('index.html')
+
+def sort(data):
+    aux = data.copy()
+    for i in aux:
+        for j in aux:
+            if i['activation'] > j['activation']:
+                temp = i['activation']
+                i['activation'] = j['activation']
+                j['activation'] = temp
+    return aux
 
 def build_completion(data):
     return valid_time(data) and has_fields(data) and data['type'] == 'build' and data['success']
