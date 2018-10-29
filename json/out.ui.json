@@ -1,6 +1,5 @@
 {
-    "action": "query",
-    "count": "10",
-    "query": "duck",
-    "time": 1540824505.320404
+    "action": "build",
+    "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs",
+    "time": 1540827056.9178703
 }

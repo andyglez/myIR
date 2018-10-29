@@ -139,4 +139,15 @@ def valid_time(data):
 
 def has_fields(data):
     return 'type' in data and 'success' in data
-            
+
+@app.route('/eval')
+def eval():
+    querys = [
+        {'query': 'leon', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
+        {'query': 'duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
+        {'query': 'fox', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
+        {'query': 'leon fox duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
+        {'query': 'leon duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
+        {'query': 'leon andy', 'measures': {'precision': 0, 'rec': 0, 'F': 0, 'E': 0, 'R' : 0}}]
+    session['eval'] = querys
+    return render_template('eval.html')
