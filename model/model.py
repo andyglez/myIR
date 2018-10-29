@@ -4,6 +4,10 @@ import os
 from time import time
 import combine
 import math
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.pdfpage import PDFPage
 
 def process(data, state, output):
     if state == 1:
@@ -26,9 +30,7 @@ def scan(path, output):
     try:
         plain = ''
         for file in os.scandir(path):#[x for x in os.scandir(path) if os.path.isfile(x)]:
-            with io.open(file, 'r', encoding='utf8') as text:
-                for line in text.readlines():
-                    plain = plain + line + ' '
+            plain = plain + convert(file)
         return terms(plain, output)
     except:
         return False
@@ -75,29 +77,54 @@ def analise_model(terms, output):
 def get_tf(word, total):
     result = []
     for f in os.scandir(globals()['path']):
-        with io.open(f, 'r', encoding='utf8') as file:
-            text = ''
+        text = convert(f)
+        tf = text.count(word) / total
+        if tf > 0:
+            data = {}
+            data['name'] = f.name
+            data['tf'] = text.count(word) / total
+            result.append(data)
+    return result
+
+def convert(f):
+    text = ''
+    if 'pdf' in f.name:
+        text = convert_from_pdf(f)
+    else:
+        with io.open(f, 'r') as file:
             for line in file.readlines():
                 text = text + line + ' '
-            tf = text.count(word) / total
-            if tf > 0:
-                data = {}
-                data['name'] = file.name
-                data['tf'] = text.count(word) / total
-                result.append(data)
-    return result
+    return  text
+
+def convert_from_pdf(file_path):
+    manager = PDFResourceManager()
+    output = io.StringIO()
+    codec = 'utf-8'
+    converter = TextConverter(manager, output, codec=codec, laparams=LAParams())
+
+    interpreter = PDFPageInterpreter(manager, converter)
+    pagenums = set()
+    infile = open(file_path, 'rb')
+
+    for page in PDFPage.get_pages(infile, pagenums):
+        interpreter.process_page(page)
+
+    infile.close()
+    converter.close()
+    text = output.getvalue()
+    output.close()
+
+    assert isinstance(text, object)
+    return str(text).replace('', '')
 
 def get_idf(word):
     count_docs = 0
     count_exis = 0
     for f in os.scandir(globals()['path']):
-        with io.open(f, 'r', encoding='utf8') as file:
-            count_docs = count_docs + 1
-            text = ''
-            for line in file.readlines():
-                text = text + line + ' '
-            if text.count(word) > 0:
-                count_exis = count_exis + 1
+        text = convert(f)
+        count_docs = count_docs + 1
+        if text.count(word) > 0:
+            count_exis = count_exis + 1
     return 0 if count_exis == 0 else math.log10(count_docs / count_exis)
 
 def query(terms, output):

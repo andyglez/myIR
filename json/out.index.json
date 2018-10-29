@@ -1,4 +1,22 @@
 {
+    "results": [
+        {
+            "activation": 1.3890917236180051,
+            "name": "document2.txt"
+        },
+        {
+            "activation": 0.7023316183646258,
+            "name": "document3.txt"
+        },
+        {
+            "activation": 2.1069948550938773,
+            "name": "document4.txt"
+        },
+        {
+            "activation": 1.030140157880069,
+            "name": "document1.txt"
+        }
+    ],
     "success": true,
-    "time": 1540827056.9959953
+    "time": 1540837764.3526185
 }
