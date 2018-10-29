@@ -107,7 +107,8 @@ def get_index():
                 session['query_sent'] = False
                 session['in_ts'] = in_data['time']
                 flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
-                session['results'] = in_data['results']
+                if 'results' in in_data:
+                    session['results'] = in_data['results']
             else:
                 session['query_sent'] = False
                 session['query'] = False

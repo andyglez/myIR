@@ -17,9 +17,10 @@ def get_terms(data, output):
         globals()['is_query'] = False
         globals()['path'] = data['path']
         return scan(data['path'], output)
-    globals()['query_count'] = data['count']
-    globals()['is_query'] = True
-    return terms(data['query'], output)
+    else:
+        globals()['query_count'] = data['count']
+        globals()['is_query'] = True
+        return terms(data['query'], output)
 
 def scan(path, output):
     try:
@@ -107,10 +108,14 @@ def query(terms, output):
     return True
 
 def report(data, output):
-    if data['success']:
-        data['action'] = 'report'
-        data['type'] = 'query' if globals()['is_query'] else 'build'
-        printjson(data, output)
+    #if data['success']:
+    result = {}
+    result['success'] = True
+    if 'results' in data:
+        result['results'] = data['results']
+    result['action'] = 'report'
+    result['type'] = 'query' if globals()['is_query'] else 'build'
+    printjson(result, output)
     #else:
     #    printjson({'action': 'report', 'success': False, 'type': 'error'}, output)
     return data['success']
@@ -123,41 +128,39 @@ def printjson(data, output):
                     separators=(',', ': '), ensure_ascii=False)
         outfile.write(text)
 
+def has_changed(file, t):
+    try:
+        with io.open(os.path.pardir + file, 'r', encoding='utf8') as inp:
+            data = json.load(inp)
+            if 'time' in data and t <= data['time']:
+                return (True, data)
+    except:
+        pass
+    return (False, {})
+
+def action_completed(inp, out, t, status):
+    (flag, dic) = has_changed(inp, t)
+    if flag:
+        process(dic, status, os.path.pardir + out)
+        return True
+    return False
+
 if __name__ == '__main__':
     status = 1
     input_file = ''
     output_file = ''
     t1 = time()
+    t2 = time()
+    t3 = time()
     while True:
-        try:
-            ui_data = {}
-            with io.open(os.path.pardir + '/json/out.ui.json', 'r', encoding='utf8') as ui_to_text:
-                ui_data = json.load(ui_to_text)
-            if t1 < ui_data['time']:
-                t2 = time()
-                process(ui_data, 1, os.path.pardir + '/json/in.text.json')
-                t1 = ui_data['time']
-                while True:
-                    try:
-                        text_data = {}
-                        with io.open(os.path.pardir + '/json/out.text.json', 'r', encoding='utf8') as text_to_index:
-                            text_data = json.load(text_to_index)
-                        if 'time' in text_data and t2 < text_data['time']:
+        globals()['is_query'] = False
+        if action_completed('/json/out.ui.json', '/json/in.text.json', t1, 1):
+            t1 = time()
+            while True:
+                if action_completed('/json/out.text.json', '/json/in.index.json', t2, 2):
+                    t2 = time()
+                    while True:
+                        if action_completed('/json/out.index.json', '/json/in.ui.json', t3, 3):
                             t3 = time()
-                            process(text_data, 2, os.path.pardir + '/json/in.index.json')
-                            t2 = text_data['time']
-                            while True:
-                                try:
-                                    index_data = {}
-                                    with io.open(os.path.pardir + '/json/out.index.json', 'r', encoding='utf8') as index_to_ui:
-                                        index_data = json.load(index_to_ui)
-                                    if 'time' in index_data and t3 < index_data['time']:
-                                        process(index_data, 3, os.path.pardir + '/json/in.ui.json')
-                                        break
-                                except Exception as e3:
-                                    printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e3), "level": 3}, os.path.pardir + '/json/in.ui.json')
                             break
-                    except Exception as e2:
-                        printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e2), "level": 2}, os.path.pardir + '/json/in.ui.json')
-        except Exception as e1:
-            printjson({'action': 'report', 'success': False, 'type': 'exception', 'message': str(e1)},  os.path.pardir + '/json/in.ui.json')
+                    break
