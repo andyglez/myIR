@@ -135,6 +135,29 @@ En la siguiente figura se puede observar lo que sucede para tres t\'erminos.
 {\includegraphics[]{model}}
 {\hfil\flushright{\textit{Fig 3. Ejemplo de definici\'on del modelo}}}
 
+El modelo est\'a implementado de tal forma que desde el punto de vista de la interfaz de usuario es un proceso unitario, es decir, en un ciclo de
+ejecuci\'on obtiene su entrada, env\'ia y recibe lo necesario de los siguientes m\'odulos, primero procesa textos, luego crea o busca \'indices y,
+finalmente, emite su salida hacia la interfaz. Esto significa que su apariencia es la siguiente:
+
+{\includegraphics[]{appereance}}
+{\hfil\flushright{\textit{Fig 4. Apariencia en ejecuci\'on del modelo}}}
+
+\section{Resultados}
+Adyacente al proyecto se encuentra un directorio de pruebas con pocos t\'erminos con el cual el sistema obtiene la m\'axima precisi\'on tanto en
+recuperaci\'on como en el ordenamiento por relevancia, sin embargo a medida que aumenta la cantidad de t\'erminos a indizar por documentos
+tanto el tiempo en ejecuci\'on como el costo en memoria se disparan exponencialmente debido al costo factorial de la combinatoria de t\'erminos
+para construir los nodos.\\
+Se encuentra que el sistema no es pr\'actico debido a la gran limitante computacional sin embargo, es te\'oricamente exacto ya que recubre todos
+los posibles casos sobre los que un usuario promedio ejercer\'ia una acci\'on mientras que se mantiene funcional.\\
+La interfaz de usuario cumple con los principios de dise\~no antes mencionados y el procesamiento de texto utiliza herramientas altamente optimizadas,
+mientras la implementaci\'on del diccionario de \'indices se define seg\'un el modelo le indique, en lo que a funciones de diccionario implique es, tambi\'en,
+altamente optimizada.
+
+\section{Conclusiones}
+Se encuentra un gran potencial en los sistemas de estas caracter\'isticas, especialmente aplicando el modelo de redes neuronales, con lo cual queda 
+pendiente optimizar la combinaci\'on de nodos o la subdivisi\'on de consultas para obtener tales resultados para \'indices de t\'erminos mayores mientras
+que se ha cumplido con los requisitos de implementaci\'on a la vez que es te\'oricamente correcto y exacto con lo cual se obtienen los mejores resultados.
+
 \begin{thebibliography}{1}
 
 \bibitem{mir}
