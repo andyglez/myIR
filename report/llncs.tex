@@ -58,7 +58,7 @@ Mientras, de manera general, se define la arquitectura del software seg\'un la i
 como indica siguiente figura.\\
 
 {\includegraphics[]{structure}}
-{\hfil\flushright{\textit{Fig 1. Estructura}}}
+{\hfil\flushright{\textit{Fig 1. Interrelaci\'on de los m\'odulos}}}
 
 \subsection{M\'odulo Interfaz de Usuario}
 
@@ -67,196 +67,73 @@ seg\'un el sistema indique.
 
 \subsubsection{Dependencias}
 
-Creada en {\textit{Python}} utilizando {\textit{Flask}} como {\textit{framework}} en el que las plantillas renderizadas deber\'an ser
-interpretadas debido al uso de cookies entonces se requiere de {\
+Creada en {\textit{Python}} utilizando {\textit{Flask}} como {\textit{framework}} en el que las plantillas renderizadas deber\'an 
+ser interpretadas debido al uso de {\textit{cookies}} en su definici\'on, entonces se requiere del m\'odulo denominado {\textit{jinja}}
+para que act\'ue como int\'erprete.\\
+Mientras, el dise\~no visual utiliza las clases definidas en {\textit{Bootstrap}} y los {\textit{scripts}} correspondientes, donde a
+ellos se le ha a\~nadido uno propio para definir un reloj en la esquina superior derecha que ayuda a visualizar el tiempo transcurrido
+entre procesos.
 
-\subsection{Perceptron}
+\subsubsection{Estructura}
 
-%{\includegraphics[]{perceptron}}
-%{\hfil\flushright{\textit{Fig 1. Perceptron}}}
+Consta de cuatro rutas solamente y un enlace externo. En la barra de navegaci\'on al tope de la p\'agina est\'an enumeradas. Estas
+son: ruta ra\'iz que, en caso de ser iniciada la aplicaci\'on, iniciar\'ar las {\textit{cookies}} y otras variables necesarias para la aplicaci\'on,
+y en otro caso, simplemente redireccionar\'a hacia la ruta {\textbf{index}}, en ella se encuentra el grueso de la aplicaci\'on de lo cual
+hablaremos a continuaci\'on, otra ruta es el "acerca" del proyecto, en el se encontrar\'an documentos relacionados con el tema como este
+y, por \'ultimo, la ruta de evaluaci\'on del sistema en el que se ha descrito casos de prueba con las medidas definidas seg\'un la teor\'ia.
 
+\subsubsection{Funcionamiento}
 
-Entre los primeros modelos aplicables de redes neuronales tenemos el \textit{perceptron}, el cual, en su visi\'on simplista, defin\'ia que
-la funci\'on de activaci\'on neuronal, o actividad sin\'aptica, era una funci\'on lineal donde su entrada, de manera general, ser\'ian n\'umeros
-reales y las salidas se daban en binario. En la figura 1 se muestra la analog\'ia de las tres neuronas del ejemplo de Hebb (y un $bias$).\\
+En la p\'agina principal se encontrar\'an los botones que indican las posibles opciones, es decir, si por ejemplo, a\'un no se ha construido
+un modelo, solamente se podr\'a esperar una direcci\'on del sistema de archivos para construir uno y entonces si ya existe, se podr\'a
+realizar una consulta.\\
+Cada bot\'on funciona seg\'un su nombre lo indica, pero dos de ellos destacan por encima de todos ya que en ellos es donde se define
+la salida v\'ia {\textit{JSON}} del sistema, los botones de construcci\'on y consulta se definen como indica la siguiente figura.
 
-Por definici\'on est\'a compuesto por dos capas de neuronas, una para la entrada y otra para la salida y se asumen completamente conectadas
-entre s\'i, mientras que los costos o pesos de las conexiones para la entrada ya est\'an previamente fijados y luego a trav\'es de su algoritmo
-interno de aprendizaje calcula los pesos para su salida. \\
+{\includegraphics[]{ui}}
+{\hfil\flushright{\textit{Fig 2. Entrada y salida de la interfaz de usuario}}}
 
-%{\includegraphics[]{claseslineales}}
-%{\hfil\flushright{\textit{Fig 2. Clases Lineales}}}
+\subsection{M\'odulo Procesamiento de Texto}
 
-Un ejemplo de uso de \textit{perceptron} es el de reconocer puntos en el plano bidimensional $(x_1, x_2)$ donde existen dos posibles clases de soluciones,
-las cuales son linealmente separables y, por ende, luego de n\'umero finito de corridas a trav\'es del perceptron, este asegura su convergencia. \\
+M\'odulo sencillo que recibe texto plano y realiza las operaciones requeridas para devolver una lista de t\'erminos v\'alidos para,
+posteriormente, ser indizados.
 
-Sin embargo, exactamente ese fue uno de los problemas encontrados por Minsky y \-Papert en 1969, cuando lanzan un art\'iculo demostrando las limitantes
-del perceptron. Si las clases de soluci\'on no eran linealmente separables entonces el modelo jam\'as converger\'a.
+\subsubsection{Metas alcanzadas}
+El m\'odulo realiza las operaciones requeridas para el procesamiento de texto. Estas son: {\textit{stemming}} y la eliminaci\'on 
+de {\textit{stopwords}} y se logran con la aplicaci\'on de la librer\'ia especificada en la secci\'on de dependencias.
 
-\subsection{Backpropagation}
+\subsubsection{Dependencias}
+Creada en {\textit{Python}} se apoya en su m\'odulo {\textit{NLTK}} que significa {\textit{Natural Language ToolKit}} especializado
+en el procesamiento de lenguaje natural y, por consecuencia de texto, en \'el se encuentran distintos subm\'odulos, entre ellos los
+necesarios son: {\textit{corpus}} y {\textit{stem}}.
 
-En consecuencia, para resolver la limitaci\'on de separabilidad lineal, surge el \textit{perceptron} multicapas (MLP) el cual es, en principio, lo mismo que su propuesta
-anterior con la diferencia de que entre las capas de entrada y salida existen $n-$capas tal que juntas toman el nombre de capas ocultas.\\
-Adem\'as, se pretende que las conexiones intermedias tengan el mayor n\'umero de conexiones posibles con el objetivo final de optimizar la respuesta, aunque
-en la pr\'actica no siempre se pueda tomar de esa forma.\\
+\subsection{M\'odulo de \'Indices}
 
-%{\includegraphics[]{mlp1}}
-%{\hfil\flushright{\textit{Fig 3. MLP}}}
+Es, b\'asicamente, un diccionario en forma de \'arbol en el que cada llave es un nodo que apunta hacia otra llave en el diccionario 
+hasta que encuentra un nodo hoja que apunta hacia un documento.\\
+Esta estructura de datos se crea en memoria y se crea seg\'un indica el m\'odulo de modelado de tal forma que evita los c\'alculos
+matriciales como su definici\'on exhibe y la propagaci\'on se realiza nodo a nodo seg\'un sus aristas de peso incidiendo sobre la
+activaci\'on de los mismos.
 
-Sin embargo, este modelo no ser\'ia capaz de reutilizar el algoritmo original para el aprendizaje de un \textit{perceptron}, al menos no hasta que en 1975 se lanza el
-algoritmo de \textit{backpropagation}. \\
+\subsubsection{Limitaciones}
+El costo en memoria asciende en gran pendiente debido a la definici\'on combinatoria de los nodos y por tanto, est\'a limitado a indizar
+relativamente pocos t\'erminos.
 
-Para su aplicaci\'on, las neuronas del MLP se consideran en un estado constante de entradas y salidas, con una funci\'on no lineal de activaci\'on. Mientras se
-asume un error $E$ para un ciclo determinado, se puede aplicar la regla del gradiente descendiente para encontrar la conexi\'on \'optima entre los pesos $w_{i,j}$
-con lo cual se asegura que luego de n\'umero finito de ciclos el error $E$ ser\'a suficientemente peque\~no.\\
+\subsubsection{Dependencias}
 
-Entonces, para un ciclo $t+1$ la variaci\'on del peso de un nodo $\Delta w_{i,j}$ se calcula de la siguiente manera: \\
+Creada en {\textit{Python}} no tiene ning\'un requerimento especial.
 
-$\Delta w_{i,j} (t + 1) = lrate * Err_{j} * o_j * (1 - o_j) * o_i$ \\
+\subsection{M\'odulo de Modelado}
 
-Donde $Err_j$ es el error entre el valor deseado en la salida $y_j$ y el valor $o_j$ producido por la neurona $j$, lo cual puede ser expresado como $Err_j = |y_j - o_j|$. \\
+Est\'a creado con la intenci\'on de modelar una red neuronal para la recuperaci\'on de informaci\'on, siendo un grafo conexo y ac\'iclico tal que 
+a los efectos de implementaci\'on es un \'arbol.\\
+Entonces sean $X_1$, $X_2$ ... $X_n$ los t\'erminos a indizar en nuestra red neuronal, luego decimos que las combinaciones de, a lo sumo,
+cinco t\'erminos conforman los nodos de la primera capa, la siguiente ser\'an las combinaciones de cuatro t\'erminos y as\'i sucesivamente
+hasta llegar a los t\'erminos unitarios que representar\'an la \'ultima capa de la capa oculta hasta llegar a los nodos documentos.\\
+En la siguiente figura se puede observar lo que sucede para tres t\'erminos.
 
-En cada ciclo (iteraci\'on, \'epoca) el algoritmo consta de dos fases:\\
-
-1. Hacia adelante es cuando las entradas pasan a propagarse hasta llegar a las neuronas de salida y computar un respuesta. \\
-
-2. Hacia atr\'as es cuando el error es calculado y no cumple con los requisitos de m\'inimo, entonces se propaga hacia los nodos intermedios provocando los cambios
-de peso $\Delta w_{i,j}.$\\
-
-Mientras el error se propaga de vuelta, el $Err_i$ para un nodo $i$ intermedio es calculado multiplicando todos los errores $Err_j$ de todas las neuronas $j$ adyacentes
-a la neurona $i$ mediante su peso correspondiente $w_{i,j}$. El procedimiento se repite hasta que el error global sea suficientemente peque\~no. \\
-
-\section{Modelo}
-
-En todo sistema de recuperaci\'on de informaci\'on derivado de los modelos algebraicos cl\'asicos, los vectores de documentos son comparados con los vectores de consulta
-para calcular su relevancia y por ende los t\'erminos de \'indices en documentos y consultas deber\'an ser comparados y pesados para computar tal relevancia. \\
-
-%{\centering\includegraphics[]{mlp2}}
-%{\hfil\flushright{\textit{Fig 4. Modelo MLP para la RI}}}
-
-Una red neuronal es una representaci\'on simplificada del cerebro humano utilizando grafos, donde los nodos se comportan como neuronas y las aristas como las
-conexiones sin\'apticas. En cada instante, un nodo es definido por su nivel de activaci\'on (funci\'on de su estado inicial y las se\~nales que recibe como par\'ametro).
-Entonces, dependiendo de su nivel de activaci\'on, un nodo $A$ podr\'ia emitir una se\~nal a otro nodo adyacente $B$. La fuerza de la se\~nal en el nodo $B$
-depende directamente del peso asociado a la arista que une los nodos $A$ y $B$.\\
-
-En el proceso de hacia atr\'as descrito anteriormente, tales se\~nales tienen relaci\'on directa con el error y por ende, mientras pasan \'epocas de ejecuci\'on tales
-se\~nales se debilitan.\\
-
-Para los nodos de consulta son asignados un valor de activaci\'on inicial de 1 (m\'aximo), con los cuales pasan a la siguiente capa de nodos de la red neuronal y env\'ian
-su se\~nal de activaci\'on a los nodos correspondientes atenuadas seg\'un la normalizaci\'on de los pesos de sus aristas $\overline{w}_{i,q}$.\\
-
-$\overline{w}_{i, q}$ = $\frac{w_{i, q}}{\sqrt{\sum_{i < t}{w^2_{i, q}}}}$ \\
-
-De la misma forma se calcular\'an los pesos para cada arista entre sus nodos correspondien\-tes de las distintas capas de la red neuronal en cuesti\'on. Finalmente,
-cuando la se\~nal llega a un nodo documento $d_j$ su nivel de activaci\'on est\'a dado por: \\
-
-$\sum_{i < t}{\overline{w}_{i, q}\overline{w}_{i, j}} = \frac{\sum_{i < t}{w_{i,q}w_{i,j}}}{\sqrt{\sum_{i < t}{w^2_{i, q}}} \* \sqrt{\sum_{i < t}{w^2_{i, j}}}}$ \\
-
-El cual coincide exactamente con la f\'ormula de relevancia del modelo cl\'asico vectorial para la primera iteraci\'on de la red neuronal.\\
-
-\subsection{Definici\'on Formal}
-
-Una red neuronal es un cu\'adruplo \\$RN = <Q, D, F, R>$ donde: \\
-
-$Q - $Conjunto de nodos de consulta donde todos tienen nivel de activaci\'on m\'axima y los pesos de las aristas correspondientes son las componentes del vector
-asociado a la consulta.\\
-
-$D - $Conjunto de nodos de documentos con funciones de entrada y salida de se\~nales en la cual los pesos de las aristas que les inciden son las componentes del
-vector asociado a la salida de la red neuronal.\\
-
-$F - $Como derivado del modelo vectorial se enmarca en la teor\'ia del \'Algebra Lineal de vectores y sus operaciones sobre un espacio $t-$dimensional y, adem\'as,
-involucra la teor\'ia de grafos, estos dirigidos y ponderados como parte de la propia teor\'ia de redes neuronales.\\
-
-$R -$Funci\'on de relevancia (ranking) enuncia\-da anteriormente y la misma que en el modelo vectorial.\\
-
-Como definici\'on conjunta se puede definir como una funci\'on $F:\overline{x} \rightarrow R, F(x, \Theta)$ tal que $\Theta$ contiene los par\'ametros
-que permiten realizar un mapeo del objeto de entrada $x$ y se devuelve otro objeto $y$.\\
-
-\subsection{Comparaci\'on}
-
-A continuaci\'on se presentan los principales aspectos que definen un sistema de recuperaci\'on puestos en comparaci\'on con el modelo de Redes Neuronales.\\
-
-\subsubsection{Framework}
-Booleano - Teor\'ia de Conjuntos y \'Algebra Booleana \\
-Vectorial - Espacio t-dimensional y \'Algebra Lineal \\
-Redes Neuronales - Teor\'ia de Grafos, Espacio t-dimensional y \'Algebra Lineal
-
-\subsubsection{Pesos}
-Booleano - \{0, 1\} \\
-Vectorial - $w_{i,j}$ \\
-Redes Neuronales - $\overline{w}_{i, j}$
-
-\subsubsection{Consultas}
-Booleano -  Expresiones Booleanas \\
-Vectorial - Vectores de peso \\
-Redes Neuronales - Nodos
-
-\subsubsection{Documentos}
-Booleano -  Vectores Binarios \\
-Vectorial - Vectores de peso \\
-Redes Neuronales - Nodos
-
-\subsubsection{Similitud}
-Booleano -  \{0,1\} \\
-Vectorial - $\cos{\alpha}$ \\
-Redes Neuronales - $\cos{\alpha}$
-
-\subsubsection{Dependencia}
-Booleano -  No \\
-Vectorial - No \\
-Redes Neuronales - Si
-
-\subsubsection{Correspondencia Parcial}
-Booleano -  No \\
-Vectorial - Si \\
-Redes Neuronales - Si
-
-\subsubsection{Ranking}
-Booleano -  No \\
-Vectorial - Si \\
-Redes Neuronales - Si
-
-\section{Ejemplo}
-
-Para entender el funcionamiento de las redes neuronales, se presenta a continuaci\'on un ejemplo ilustrativo de un red neuronal dedicada al
-reconocimiento de vocales a partir de una imagen.\\
-
-%{\includegraphics[]{example}}\\
-%{\hfil\flushright{\textit{Fig 5. Ejemplo. Reconocimiento en una imagen}}}
-
-Primeramente, el sistema debe conocer las muestras de cada vocal parametrizadas:\\
-
-A: 01110100011000111111100011000110001 \\
-
-E: 11111100001000011100100001000011111 \\
-
-I: 11111001000010000100001000010011111 \\
-
-O: 01110100011000110001100011000101110 \\
-
-U: 10001100011000110001100011000101110 \\
-
-Fijar como n\'umero de entradas de la red 35, puesto que son 35 los n\'umeros de la matriz resultante de $7x5$ resultante de la parametrizaci\'on
-y como n\'umero de salidas 5 ya que esa es la cantidad de vocales.\\
-
-Note que en una primera instancia no es necesaria una capa oculta, de manera emp\'irica se pueden ir a\~nadiendo capas con el objetivo de optimizar
-resultados o simplemente disminuir el tiempo en ejecuci\'on antes de dar tales resultados. Adem\'as, se puede evitar el uso de neuronas auxiliares (bias)
-y se utiliza como funci\'on de activaci\'on la sigmoidal (aunque pueden ser muchas otras). \\
-Se fijan los valores iniciales de $lrate$, $M$, $E_{min}$ como marco de trabajo donde:\\
-- $lrate$ puede tomar valores entre 0 y 1. Usualmente se les da un valor medio. \\
-- $M$ puede tomar valores entre 0 y 1. Se utiliza para asegurar que el algoritmo no se caiga en ciclos en ninguno de los pasos\\
-- $E_{min}$ se define como cota de ejecuci\'on y es usualmente un valor lo suficientemente peque\~no tal que el resultado se considere una respuesta aceptable.
-
-\section{Conclusiones}
-
-El alza de nuevas de tareas de recuperaci\'on de informaci\'on demanda replantear muchas de las m\'etricas que consideramos correctas para evaluar la relevancia
-de un documento en un sistema dada una consulta y, a la vez, para otra situaci\'on ser totalmente lo contrario. Es, por ende, que los modelos de Redes Neuronales
-deber\'an no solo evolucionar desde el punto de vista computacional, es decir, en cuanto a temas de optimizac\'ion, sino que debe ser acompa\~nado de numerosos
-aspectos que interac\-t\'uan sobre ellos. \\
-Est\'a reflejado que a lo largo del tiempo, estos modelos han demostrado cuantiosos resultados para muchas ramas de la ciencia, con lo cual su importancia existe
-m\'as all\'a del plano te\'orico, estando presentes en casi cada acci\'on tecnol\'ogica que cada persona promedio realiza al menos una o dos veces al d\'ia y a\'un se
-encuentra en constante evoluci\'on.
-
+{\includegraphics[]{model}}
+{\hfil\flushright{\textit{Fig 3. Ejemplo de definici\'on del modelo}}}
 
 \begin{thebibliography}{1}
 
