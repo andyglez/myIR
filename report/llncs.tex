@@ -46,66 +46,29 @@ Cada m\'odulo existe en proceso diferente del sistema operativo y, \'unicamente,
 para consultar los archivos de entrada y salida, para ello se cre\'o un sistema de notificaciones.\\
 Todo fichero {\textit{JSON}}, como es conocido, son b\'asicamente diccionarios de llave-valor, entonces cada m\'odulo cuando
 emita una salida escribir\'a la estampilla de tiempo que le corresponde logrando de esta forma que el m\'odulo que utilice ese
-fichero como entrada sepa que ha ocurrido un cambio al mismo y podr\'a efectuar sus operaciones.
+fichero como entrada sepa que ha ocurrido un cambio al mismo y sea capaz entonces de efectuar sus operaciones.\\
+El orden de la comunicaci\'on es definido seg\'un su necesidad, en primera instancia se encuentra el m\'odulo de la interfaz de
+usuario que emite como salida la propia entrada del m\'odulo de modelado y espera como entrada la salida del mismo. Mientras
+los m\'odulos de procesamiento de textos e indizado se comportan de igual manera para la modelaci\'on no se comporta as\'i
+como en un proceso plano, sino que se divide en tres instancias enviando y recibiendo de los otros m\'odulos hasta que logra
+emitir la salida concisa que fue requerida por la interfaz de usuario. \\
+En las secciones correspondientes a cada uno de ellos se discutir\'an los aspectos de su implementaci\'on y se definir\'an, de 
+manera expl\'icita como se comportan para emitir una salida de datos consecuente a su situaci\'on.\\
+Mientras, de manera general, se define la arquitectura del software seg\'un la interrelaci\'on existente presente en cada par
+como indica siguiente figura.\\
 
 {\includegraphics[]{structure}}
 {\hfil\flushright{\textit{Fig 1. Estructura}}}
 
-Los estudios neurobiol\'ogicos distinguen al menos tres niveles siguiendo la l\'inea de procesar informaci\'on: estructural,
-fisiol\'ogico y cognitivo. En el nivel estructural se puede observar las neuronas, sus regiones y los puentes que las conectan,
-mientras en el nivel fisiol\'ogico se define la forma en que tales conexiones ser\'an realizadas y, de manera culminante, en
-el nivel cognitivo es donde se decide cuales de esas conexiones devuelven la informaci\'on necesaria para responder a una
-situaci\'on espec\'ifica. \\
+\subsection{M\'odulo Interfaz de Usuario}
 
-El funcionamiento del cerebro humano es impresionante y siempre ha sido el deseo de numerosos campos cient\'ificos
-desarrollar avances que parezcan o repliquen tal comportamiento, y es as\'i como en las Ciencias de la Computaci\'on
-se inserta en el mismo af\'an cuando en 1943 \cite{foundations} Warren McCulloch y Walter Pitts crearon el primer modelo computacional
-de redes neuronales llamada frontera l\'ogica, estableciendo las bases matem\'aticas de los tres niveles de procesamiento
-de informaci\'on en el cerebro donde las neuronas ser\'ian nodos de un grafo y la sinapsis de sus conexiones ser\'ian las
-aristas de su densidad, mientras que el nivel cognitivo quedar\'ia resumido en el algoritmo de su mode\-lo. \\
+Es una interfaz web minimalista que cumple con los est\'andares de dise\~no para el cual el usuario solamente podr\'a interactuar
+seg\'un el sistema indique.
 
-Con este primer modelo quedaron bien marcadas las dos ramas fundamentales para su aplicaci\'on: enfocada en los
-procesos biol\'ogicos del cerebro y su aplicaci\'on en inteligencia artificial. \\
+\subsubsection{Dependencias}
 
-\subsection{Aprendizaje de Hebb}
-
-A fines de la d\'ecada de 1940 el ps\'icologo y padre de la rama denominada biopsicolog\'ia Donald Hebb cre\'o una hip\'otesis
-de aprendizaje basado en el mecanismo de plasticidad neuronal. A pesar, de parecer un desv\'io de t\'opico es importante ver
-como existe la retroalimentaci\'on dentro de los mecanismos computacionales posteriormente inspirados sobre \'el.\\
-
-Consideremos tres neuronas A, C y B de un perro. La neurona A recibe sonido desde una campanilla, la neurona C recibe la
-imagen de la comida ofrecida al perro, mientras que la neurona B, al quedar excitada, activa el proceso de salivaci\'on en el perro.\\
-
-Entrada de sonido $\rightarrow$ A $\rightarrow$ B $\rightarrow$ Salivaci\'on\\
-
-Entrada visual $\rightarrow$ C $\rightarrow$  /\\
-
-Supongamos que la excitaci\'on de C, causada por la visualizaci\'on de la comida, es suficiente para excitar a B, dando lugar a la 
-salivaci\'on. \\
-
-Supongamos, adem\'as, que en ausencia de est\'imulo adicional, la excitaci\'on de A, al o\'ir la campanilla, no basta para dar lugar al
-disparo de B.\\
-
-Permitamos que C de lugar a que B dispare mostrando comida al sujeto y, mientras B sigue disparando, estimulemos A haciendo
-sonar una campanilla. Dado que B sigue disparando, A participa ahora en la excitaci\'on de B, a\'un cuando por s\'i sola A no ser\'ia
-suficiente para dar lugar a que B dispare.\\
-
-En esta situaci\'on, la suposici\'on de Hebb determina que se produce alg\'un cambio entre A y B, de tal modo que la influencia de A
-sobre B se ve incrementada. Si el experimento se repite con suficiente frecuencia, A ser\'a capaz de lograr, eventualmente, que se
-dispare B incluso en ausencia de la estimulaci\'on visual procedente de C. Entonces, si se hace sonar la campanilla, pero no se muestra
-la comida, seguir\'a produci\'endose la salivaci\'on, porque la excitaci\'on debida \'unicamente a A es ahora suficiente para lograr que
-B dispare.\\
-
-Dado que la conexi\'on entre neuronas se hace a trav\'es de la sinapsis, es razonable suponer que cualquier cambio que pueda tener
-lugar durante el aprendizaje deber\'a producirse en ellas. Hebb sosten\'ia la teor\'ia de que aumentaba el \'area de la uni\'on sin\'aptica.\\
-
-Luego, siguiendo la analog\'ia neurona-nodos desde 1948 comenz\'o su aplicaci\'on para modelos
-computacionales en m\'aquinas de Turing tipo-B. MIT no estuvo tan lejos, Farley y Wesley Clarke simularon una red Hebbian en 1954,
-mientras en 1956 otras redes neuronales fueron creadas por Rochester, Holland, Habit y Duda. \\
-
-Aunque el verdadero ejemplo de aprendizaje y el modelo base de los actuales fue lanzado en 1958 por Frank Rosenblatt quien le llam\'o
-\textit{perceptron}, utilizando un algoritmo de reconocimiento de patrones basado en una red de aprendizaje de dos capas usando
-simplemente sumas y restas, cambiando la idea de procesamiento que adquieren las redes neuronales.
+Creada en {\textit{Python}} utilizando {\textit{Flask}} como {\textit{framework}} en el que las plantillas renderizadas deber\'an ser
+interpretadas debido al uso de cookies entonces se requiere de {\
 
 \subsection{Perceptron}
 
