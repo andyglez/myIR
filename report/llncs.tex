@@ -19,26 +19,37 @@
 \institute{MATCOM, Universidad de la Habana}
 \maketitle
 
-\begin{multicols}{2}[]
 
 \begin{abstract}
 
 Este trabajo recopila los puntos claves que conforman la implementaci\'on de un sistema de recuperaci\'on
-de informaci\'on aunque no pretende proponer la mejor soluci\'on pero si una funcional.
+de informaci\'on aunque no pretende proponer la mejor soluci\'on pero si una funcional para la aplicaci\'on
+de los modelos de redes neuronales en la teor\'ia de los sistemas de recuperaci\'on de informaci\'on.
 
 \end{abstract}
 
 \section{Introducci\'on}\label{sec:Introduction}
 
-Comenzaremos describiendo la estructura de la implementaci\'on y explicando como funciona de manera general.
-Luego, subdividiremos las distintas tareas en cuatro m\'odulos de los cuales se explican, de igual manera, su funcionamiento
-y estructura. Finalmente, se enumeran ejemplos de acuerdo con los resultados obtenidos.\\
+Comenzaremos describiendo la estructura de la implementaci\'on, enumerando sus dependencias y definiendo la entrada y salida
+del programa, con ello se va explicando su funcionamiento de manera general. \\
+Luego para profundizar, subdividiremos las distintas tareas en cuatro  m\'odulos de los cuales se argumentan, de igual manera, su
+funcionamiento y estructura demostrando el cumplimiento de los puntos requeridos en cada uno de ellos.\\
+Finalmente, se enumeran ejemplos de acuerdo con los resultados obtenidos que muestran los puntos fuertes y d\'ebiles de la
+implementaci\'on con el prop\'osito de darle continuidad al proceso de refinamiento en el que actualmente se encuentra.\\
 
-\section{Historia}\label{sec:History}
+\section{Estructura}\label{sec:Structure}
 
-Las redes neuronales se basan en un modelo computacional el cual fue biol\'ogicamente inspirado: exactamente como
-su nombre indica, pretende simular el procesamiento de informaci\'on, como por ejemplo, dar soluci\'on a un problema
-espec\'ifico o construir su propio conocimiento tal y como un humano lo har\'ia. \\
+El proyecto se prefiere ver como un todo y aun as\'i consta de cuatro m\'odulos: interfaz de usuario, procesamiento de texto,
+\'indice y modelado, todos implementados utilizando {\textit{Python}} (v3.6) con entradas y salidas sobre documentos de tipo
+ {\textit{JSON}} que definen su comportamiento en cada instancia de la ejecuci\'on. \\
+Cada m\'odulo existe en proceso diferente del sistema operativo y, \'unicamente, se relacionan mediante accesos al disco duro
+para consultar los archivos de entrada y salida, para ello se cre\'o un sistema de notificaciones.\\
+Todo fichero {\textit{JSON}}, como es conocido, son b\'asicamente diccionarios de llave-valor, entonces cada m\'odulo cuando
+emita una salida escribir\'a la estampilla de tiempo que le corresponde logrando de esta forma que el m\'odulo que utilice ese
+fichero como entrada sepa que ha ocurrido un cambio al mismo y podr\'a efectuar sus operaciones.
+
+{\includegraphics[]{structure}}
+{\hfil\flushright{\textit{Fig 1. Estructura}}}
 
 Los estudios neurobiol\'ogicos distinguen al menos tres niveles siguiendo la l\'inea de procesar informaci\'on: estructural,
 fisiol\'ogico y cognitivo. En el nivel estructural se puede observar las neuronas, sus regiones y los puentes que las conectan,
@@ -284,7 +295,6 @@ m\'as all\'a del plano te\'orico, estando presentes en casi cada acci\'on tecnol
 encuentra en constante evoluci\'on.
 
 
-\end{multicols}
 \begin{thebibliography}{1}
 
 \bibitem{mir}
