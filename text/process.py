@@ -13,7 +13,7 @@ def process(file):
     result = {}
     result['terms'] = terms
     result['time'] = time()
-    with io.open(os.path.pardir + '/json/out.text.json', 'w', encoding='utf8') as outfile:
+    with io.open(os.path.curdir + '/json/out.text.json', 'w', encoding='utf8') as outfile:
         text = json.dumps(result,
                     indent=4, sort_keys=True,
                     separators=(',', ': '), ensure_ascii=False)
@@ -46,13 +46,11 @@ def clean(file):
 
 if __name__ == '__main__':
     t = time()
-    while True:
-        try:
-            data = {}
-            with io.open(os.path.pardir + '/json/in.text.json', 'r', encoding='utf8') as data_file:
-                data = json.load(data_file)
-            if t < data['time']:
-                process(data)
-                t = data['time']
-        except:
-            pass
+    try:
+        data = {}
+        with io.open(os.path.curdir + '/json/in.text.json', 'r', encoding='utf8') as data_file:
+            data = json.load(data_file)
+            process(data)
+            t = data['time']
+    except:
+        pass

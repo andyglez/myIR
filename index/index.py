@@ -14,7 +14,7 @@ def process(data):
         globals()['index'].pop(data['key'])
     else:
         result['results'] = get(data['key'])
-    printjson(result, os.path.pardir + '/json/out.index.json')
+    printjson(result, os.path.curdir + '/json/out.index.json')
 
 def get(key):
     value = [(0, globals()['index'][key])]
@@ -62,6 +62,7 @@ def create_index(data):
     result = {}
     for node in data:
         result[node['key']] = node
+    printjson(result, 'index.json')
     return result
 
 def printjson(data, output):
@@ -73,16 +74,19 @@ def printjson(data, output):
         outfile.write(text)
 
 if __name__ == '__main__':
-    globals()['index'] = {}
     t = time()
-    while True:
-        try:
-            data = {}
-            with io.open(os.path.pardir + '/json/in.index.json', 'r', encoding='utf8') as data_file:
-                data = json.load(data_file)
-            if t < data['time']:
-                process(data)
-                t = time()
-        except Exception as e:
-            printjson({'success': False, 'message': str(e)}, os.path.pardir + '/json/out.index.json')
-            pass
+    try:
+        globals()['index'] = {}
+        with io.open(os.path.curdir + '/index/index.json', 'r', encoding='utf8') as index:
+            globals()['index'] = json.load(index)
+    except:
+        pass
+    try:
+        data = {}
+        with io.open(os.path.curdir + '/json/in.index.json', 'r', encoding='utf8') as data_file:
+            data = json.load(data_file)
+            process(data)
+            t = time()
+    except Exception as e:
+        printjson({'success': False, 'message': str(e)}, os.path.curdir + '/json/out.index.json')
+        pass

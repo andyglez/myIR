@@ -1,5 +1,6 @@
 {
-    "text": "..\\text\\output.json",
-    "ui": "..\\ui\\static\\json\\action.json",
-    "waiting": false
+    "is_query": true,
+    "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Dean\\Sistemas de Informacion\\belief_network_model\\documents",
+    "query_count": "10",
+    "time": 1540990179.39667
 }

@@ -4,6 +4,7 @@ import os
 from time import time
 import combine
 import math
+import sys
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -18,12 +19,14 @@ def process(data, state, output):
 
 def get_terms(data, output):
     if data['action'] == 'build':
-        globals()['is_query'] = False
-        globals()['path'] = data['path']
+        globals()['config']['is_query'] = False
+        globals()['config']['path'] = data['path']
+        printjson(globals()['config'], os.path.curdir + '/model/config.json')
         return scan(data['path'], output)
     else:
-        globals()['query_count'] = data['count']
-        globals()['is_query'] = True
+        globals()['config']['query_count'] = data['count']
+        globals()['config']['is_query'] = True
+        printjson(globals()['config'], os.path.curdir + '/model/config.json')
         return terms(data['query'], output)
 
 def scan(path, output):
@@ -44,7 +47,7 @@ def terms(plain, output):
     return True
 
 def analise_model(terms, output):
-    if globals()['is_query']:
+    if globals()['config']['is_query']:
         return query(terms, output)
     result = {}
     result['action'] = 'create'
@@ -76,7 +79,7 @@ def analise_model(terms, output):
 
 def get_tf(word, total):
     result = []
-    for f in os.scandir(globals()['path']):
+    for f in os.scandir(globals()['config']['path']):
         text = convert(f)
         tf = text.count(word) / total
         if tf > 0:
@@ -120,7 +123,7 @@ def convert_from_pdf(file_path):
 def get_idf(word):
     count_docs = 0
     count_exis = 0
-    for f in os.scandir(globals()['path']):
+    for f in os.scandir(globals()['config']['path']):
         text = convert(f)
         count_docs = count_docs + 1
         if text.count(word) > 0:
@@ -141,7 +144,7 @@ def report(data, output):
     if 'results' in data:
         result['results'] = data['results']
     result['action'] = 'report'
-    result['type'] = 'query' if globals()['is_query'] else 'build'
+    result['type'] = 'query' if globals()['config']['is_query'] else 'build'
     printjson(result, output)
     #else:
     #    printjson({'action': 'report', 'success': False, 'type': 'error'}, output)
@@ -173,21 +176,32 @@ def action_completed(inp, out, t, status):
     return False
 
 if __name__ == '__main__':
-    status = 1
-    input_file = ''
-    output_file = ''
-    t1 = time()
-    t2 = time()
-    t3 = time()
-    while True:
-        globals()['is_query'] = False
-        if action_completed('/json/out.ui.json', '/json/in.text.json', t1, 1):
-            t1 = time()
-            while True:
-                if action_completed('/json/out.text.json', '/json/in.index.json', t2, 2):
-                    t2 = time()
-                    while True:
-                        if action_completed('/json/out.index.json', '/json/in.ui.json', t3, 3):
-                            t3 = time()
-                            break
-                    break
+    status = int(sys.argv[1])
+    input_file = os.path.curdir + '/json/'
+    output_file = os.path.curdir + '/json/'
+    if status == 1:
+        input_file = input_file + 'out.ui.json'
+        output_file= output_file+ 'in.text.json'
+    elif status == 2:
+        input_file = input_file + 'out.text.json'
+        output_file= output_file+ 'in.index.json'
+    else:
+        input_file = input_file + 'out.index.json'
+        output_file= output_file+ 'in.ui.json'
+    t = time()
+    try:
+        with io.open(os.path.curdir + '/model/config.json', 'r', encoding='utf8') as config:
+            c = json.load(config)
+            if 'time' in c:
+                globals()['config'] = c
+            else:
+                globals()['config'] = {}
+    except:
+        pass
+    try:
+        data = {}
+        with io.open(input_file, 'r', encoding='utf8') as file:
+            data = json.load(file)
+        process(data, status, output_file)
+    except:
+        pass
