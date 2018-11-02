@@ -8,13 +8,13 @@
         "document5.txt"
     ],
     "is_query": true,
-    "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Dean\\Sistemas de Informacion\\belief_network_model\\documents",
-    "query_count": "10",
+    "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs",
+    "query_count": 10,
     "status": 1,
     "terms": [
         "leon",
         "fox",
         "duck"
     ],
-    "time": 1541195531.0875888
+    "time": 1541202576.4232733
 }

@@ -41,9 +41,9 @@ if __name__ == '__main__':
     try:
         with io.open(os.path.curdir + '/index/index.json', 'r', encoding='utf8') as model:
             index = json.load(model)
-            index['current'] = os.path.curdir + '/index/index.json'
     except:
         pass
+    index['current'] = os.path.curdir + '/index/index.json'
     try:
         data = {}
         with io.open(os.path.curdir + '/json/in.index.json', 'r', encoding='utf8') as data_file:

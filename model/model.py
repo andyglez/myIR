@@ -24,7 +24,7 @@ def get_terms(data, config, output):
         scan(data['path'], output)
         printjson(config, config['current'])
     else:
-        config['query_count'] = data['count']
+        config['query_count'] = int(data['count'])
         config['is_query'] = True
         terms(data['query'], output)
         printjson(config, config['current'])
@@ -79,8 +79,20 @@ def create_vector(all_terms, query_terms):
 
 def report(data, config, output):
     docs = [{'name': config['docs'][i], 'activation': data['results'][i]} for i in range(len(data['results'])) if data['results'][i] > 0.2] if 'results' in data else []
-    result = {'success': True, 'action': 'report', 'type': 'query' if config['is_query'] else 'build', 'results': docs}
+    res = sort(docs, config['query_count'])
+    result = {'success': True, 'action': 'report', 'type': 'query' if config['is_query'] else 'build', 'results': res}
     printjson(result, output)
+
+
+def sort(rank, count):
+    aux = rank.copy()
+    for i in range(len(aux)):
+        for j in range(i + 1, len(aux)):
+            if aux[i]['activation'] < aux[j]['activation']:
+                swap = aux[i]
+                aux[i] = aux[j]
+                aux[j] = swap
+    return [x for j, x in enumerate(aux) if j < count]
 
 
 def printjson(dic, output):

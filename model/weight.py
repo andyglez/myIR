@@ -1,7 +1,7 @@
 from converter import convert
 from os import scandir, urandom
 from math import log2, pow, sqrt
-from random import Random
+from random import randint
 
 
 def tf(path, word, total):
@@ -29,7 +29,7 @@ def n_matrix(n):
 
 
 def matrix(n, m):
-    return [normalize([Random().randint(0, m) for j in range(m)]) for i in range(n)]
+    return [normalize([randint(0, n*m) for j in range(m)]) for i in range(n)]
 
 
 def normalize(weights):
