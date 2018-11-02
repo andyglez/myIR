@@ -3,6 +3,7 @@ import io
 import os
 from time import time
 from converter import convert
+from weigth import tf, idf, matrix
 import math
 import sys
 
@@ -18,12 +19,12 @@ def get_terms(data, output):
     if data['action'] == 'build':
         config['is_query'] = False
         config['path'] = data['path']
-        printjson(config, os.path.curdir + '/model/config.json')
+        printjson(config, config['current'])
         return scan(data['path'], output)
     else:
         config['query_count'] = data['count']
         config['is_query'] = True
-        printjson(config, os.path.curdir + '/model/config.json')
+        printjson(config, config['current'])
         return terms(data['query'], output)
 
 def scan(path, output):
@@ -34,7 +35,7 @@ def scan(path, output):
         return terms(plain, output)
     except:
         return False
-    
+
 
 def terms(plain, output):
     result = {}
@@ -49,46 +50,25 @@ def analise_model(term_list, output):
         return query(term_list, output)
 
     config['terms'] = term_list
-    result = {'action': 'create', 'path': config['path'], 'data': []}
     t_len = len(term_list)
-    result['data'].append(t_len)
-    result['data'].append(t_len * 2)
-    result['data'].append(t_len * 2)
-    result['data'].append(len(os.scandir(config['path'])))
-
+    d_len = len(os.scandir(config['path']))
+    result = {'action': 'create',
+              'path': config['path'],
+              'data': [matrix(t_len * 2, t_len), matrix(t_len * 2), matrix(t_len * 2, d_len)],
+              'tf': [tf(x) for x in term_list],
+              'idf': [idf(x) for x in term_list]}
     printjson(config, config['current'])
     printjson(result, output)
     return True
 
-def get_tf(word, total):
-    result = []
-    for f in os.scandir(config['path']):
-        text = convert(f)
-        tf = text.count(word) / total
-        if tf > 0:
-            data = {}
-            data['name'] = f.name
-            data['tf'] = text.count(word) / total
-            result.append(data)
-    return result
 
-
-def get_idf(word):
-    count_docs = 0
-    count_exis = 0
-    for f in os.scandir(config['path']):
-        text = convert(f)
-        count_docs = count_docs + 1
-        if text.count(word) > 0:
-            count_exis = count_exis + 1
-    return 0 if count_exis == 0 else math.log10(count_docs / count_exis)
-
-def query(terms, output):
+def query(term_list, output):
     result = {}
     result['action'] = 'get'
-    result['key'] = ''
+    result['key'] = [1 for term in config['terms'] if term in term_list and 0 if term not in term_list]
     printjson(result, output)
     return True
+
 
 def report(data, output):
     #if data['success']:
