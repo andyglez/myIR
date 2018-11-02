@@ -1,9 +1,11 @@
 from numpy import dot
 from math import sqrt
+from utils import build_inputs, build_targets, normal_denominator
+
 
 def train(neural_network, tf, idf):
-    inputs = [[1 for j in range(len(tf)) if j == i and 0 if not j == i] for i in range(len(tf))]
-    targets = [[1 for tf in tf_i if idf * tf > 0 and 0 if idf * tf == 0] for idf, tf_i in zip(idf, tf)]
+    inputs = build_inputs(len(tf))
+    targets = build_targets(tf, idf)
 
     for i in range(10):
         for input_vector, target_vector in zip(inputs, targets):
@@ -46,11 +48,6 @@ def feed_forward(neural_network, input_vector):
 
 
 def neuron_output(weights, inputs):
-    return dot(weights, inputs) / (normal_denominator(weights)* normal_denominator(inputs))
+    return dot(weights, inputs) / (normal_denominator(weights) * normal_denominator(inputs))
 
 
-def normal_denominator(weights):
-    den = 0
-    for x in [pow(w, 2) for w in weights]:
-        den += x
-    return sqrt(den)

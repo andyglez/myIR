@@ -1,6 +1,19 @@
 {
-    "is_query": true,
+    "current": "./model/config.json",
+    "docs": [
+        "document1.txt",
+        "document2.txt",
+        "document3.txt",
+        "document4.txt",
+        "document5.txt"
+    ],
+    "is_query": false,
     "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs",
-    "query_count": "10",
-    "time": 1540990399.8773346
+    "status": 2,
+    "terms": [
+        "leon",
+        "fox",
+        "duck"
+    ],
+    "time": 1541185302.5414953
 }

@@ -1,17 +1,15 @@
 from converter import convert
 from os import scandir, urandom
 from math import log2, pow, sqrt
+from random import Random
+
 
 def tf(path, word, total):
     result = []
     for f in scandir(path):
         text = convert(f)
-        tf = text.count(word) / total
-        if tf > 0:
-            data = {}
-            data['name'] = f.name
-            data['tf'] = text.count(word) / total
-            result.append(data)
+        value = text.count(word) / total
+        result.append(value)
     return result
 
 
@@ -26,12 +24,12 @@ def idf(path, word):
     return 0 if count_exis == 0 else log2(count_docs / count_exis)
 
 
-def matrix(n):
+def n_matrix(n):
     return matrix(n, n)
 
 
 def matrix(n, m):
-    return [normalize([urandom(m) for _ in range(m)]) for _ in range(n)]
+    return [normalize([Random().randint(0, m) for j in range(m)]) for i in range(n)]
 
 
 def normalize(weights):

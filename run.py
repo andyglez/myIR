@@ -4,6 +4,7 @@ import io
 import subprocess
 import os
 
+
 def run_modules():
     subprocess.run(['python', os.path.curdir + '/model/model.py', '1'])
     subprocess.run(['python', os.path.curdir + '/text/process.py'])
