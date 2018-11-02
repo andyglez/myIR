@@ -2,31 +2,28 @@ import json
 import io
 import os
 from time import time
-import combine
+from converter import convert
 import math
 import sys
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from pdfminer.pdfpage import PDFPage
 
-def process(data, state, output):
-    if state == 1:
+
+def process(data, config, output):
+    if config['status'] == 1:
         return get_terms(data, output)
-    if state == 2:
+    if config['status'] == 2:
         return analise_model(data['terms'], output)
     return report(data, output)
 
 def get_terms(data, output):
     if data['action'] == 'build':
-        globals()['config']['is_query'] = False
-        globals()['config']['path'] = data['path']
-        printjson(globals()['config'], os.path.curdir + '/model/config.json')
+        config['is_query'] = False
+        config['path'] = data['path']
+        printjson(config, os.path.curdir + '/model/config.json')
         return scan(data['path'], output)
     else:
-        globals()['config']['query_count'] = data['count']
-        globals()['config']['is_query'] = True
-        printjson(globals()['config'], os.path.curdir + '/model/config.json')
+        config['query_count'] = data['count']
+        config['is_query'] = True
+        printjson(config, os.path.curdir + '/model/config.json')
         return terms(data['query'], output)
 
 def scan(path, output):
@@ -46,40 +43,26 @@ def terms(plain, output):
     printjson(result, output)
     return True
 
-def analise_model(terms, output):
-    if globals()['config']['is_query']:
-        return query(terms, output)
-    result = {}
-    result['action'] = 'create'
-    result['data'] = []
-    total = 5 if terms.__len__() >= 5 else terms.__len__()
-    n = terms.__len__()
-    perm = math.factorial(n)
-    for i in range(0, total):
-        k = total - i
-        variations = perm / math.factorial(n - k)
-        for cb in combine.combinations(terms, total - i):
-            index = {}
-            word = combine.str_concat(cb)
-            index['key'] = word
-            index['layer'] = i
-            index['idf'] = get_idf(word)
-            index['documents'] = get_tf(word, variations)
-            if i < total - 1:
-                index['next'] = []
-                count = math.factorial(total - i)
-                for prox in combine.combinations(cb, total - (i + 1)):
-                    edge = {}
-                    edge['activation'] = math.sqrt(count) / count
-                    edge['name'] = combine.str_concat(prox)
-                    index['next'].append(edge)
-            result['data'].append(index)
+
+def analise_model(term_list, output):
+    if config['is_query']:
+        return query(term_list, output)
+
+    config['terms'] = term_list
+    result = {'action': 'create', 'path': config['path'], 'data': []}
+    t_len = len(term_list)
+    result['data'].append(t_len)
+    result['data'].append(t_len * 2)
+    result['data'].append(t_len * 2)
+    result['data'].append(len(os.scandir(config['path'])))
+
+    printjson(config, config['current'])
     printjson(result, output)
     return True
 
 def get_tf(word, total):
     result = []
-    for f in os.scandir(globals()['config']['path']):
+    for f in os.scandir(config['path']):
         text = convert(f)
         tf = text.count(word) / total
         if tf > 0:
@@ -89,41 +72,11 @@ def get_tf(word, total):
             result.append(data)
     return result
 
-def convert(f):
-    text = ''
-    if 'pdf' in f.name:
-        text = convert_from_pdf(f)
-    else:
-        with io.open(f, 'r') as file:
-            for line in file.readlines():
-                text = text + line + ' '
-    return  text
-
-def convert_from_pdf(file_path):
-    manager = PDFResourceManager()
-    output = io.StringIO()
-    codec = 'utf-8'
-    converter = TextConverter(manager, output, codec=codec, laparams=LAParams())
-
-    interpreter = PDFPageInterpreter(manager, converter)
-    pagenums = set()
-    infile = open(file_path, 'rb')
-
-    for page in PDFPage.get_pages(infile, pagenums):
-        interpreter.process_page(page)
-
-    infile.close()
-    converter.close()
-    text = output.getvalue()
-    output.close()
-
-    assert isinstance(text, object)
-    return str(text).replace('', '')
 
 def get_idf(word):
     count_docs = 0
     count_exis = 0
-    for f in os.scandir(globals()['config']['path']):
+    for f in os.scandir(config['path']):
         text = convert(f)
         count_docs = count_docs + 1
         if text.count(word) > 0:
@@ -133,7 +86,7 @@ def get_idf(word):
 def query(terms, output):
     result = {}
     result['action'] = 'get'
-    result['key'] = combine.str_concat(terms)
+    result['key'] = ''
     printjson(result, output)
     return True
 
@@ -189,19 +142,20 @@ if __name__ == '__main__':
         input_file = input_file + 'out.index.json'
         output_file= output_file+ 'in.ui.json'
     t = time()
+    config = {}
     try:
         with io.open(os.path.curdir + '/model/config.json', 'r', encoding='utf8') as config:
             c = json.load(config)
             if 'time' in c:
-                globals()['config'] = c
-            else:
-                globals()['config'] = {}
+                config = c
     except:
         pass
+    config['status'] = status
+    config['current'] = os.path.curdir + '/model/config.json'
     try:
         data = {}
         with io.open(input_file, 'r', encoding='utf8') as file:
             data = json.load(file)
-        process(data, status, output_file)
+        process(data, config, output_file)
     except:
         pass
