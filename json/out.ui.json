@@ -1,5 +1,6 @@
 {
-    "action": "build",
-    "path": "C:\\Users\\Andy\\Desktop\\Sistemas de Informacion\\Primer Proyecto\\myIR\\docs",
-    "time": 1541185291.395765
+    "action": "query",
+    "count": "10",
+    "query": "leon fox",
+    "time": 1541195530.756025
 }

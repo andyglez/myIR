@@ -2,15 +2,27 @@
     "action": "report",
     "results": [
         {
-            "activation": 0.08843111303823056,
+            "activation": 0.2315271518203015,
+            "name": "document1.txt"
+        },
+        {
+            "activation": 0.659172509780511,
+            "name": "document2.txt"
+        },
+        {
+            "activation": 0.9427755234017635,
             "name": "document3.txt"
         },
         {
-            "activation": 0.08843111303823056,
+            "activation": 0.6599674226058136,
+            "name": "document4.txt"
+        },
+        {
+            "activation": 0.34682627251154013,
             "name": "document5.txt"
         }
     ],
     "success": true,
-    "time": 1540990403.6273358,
+    "time": 1541195535.1108778,
     "type": "query"
 }

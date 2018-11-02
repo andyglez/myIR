@@ -14,7 +14,7 @@ def process(data, config, output):
     elif config['status'] == 2:
         analize_model(data['terms'], config, output)
     else:
-        report(data, output)
+        report(data, config, output)
 
 def get_terms(data, config, output):
     if data['action'] == 'build':
@@ -46,7 +46,7 @@ def terms(plain, output):
 
 def analize_model(term_list, config, output):
     if config['is_query']:
-        return query(term_list, output)
+        return query(term_list, config, output)
 
     config['terms'] = term_list
     printjson(config, config['current'])
@@ -55,20 +55,30 @@ def analize_model(term_list, config, output):
     d_len = len([x for x in os.scandir(config['path'])])
     result = {'action': 'create',
               'path': config['path'],
-              'data': [matrix(t_len * 2, t_len), n_matrix(t_len * 2), matrix(t_len * 2, d_len)],
+              'data': [matrix(t_len * 2, t_len), n_matrix(t_len * 2), matrix(d_len, t_len * 2)],
               'tf': [tf(config['path'], x, t_len) for x in term_list],
               'idf': [idf(config['path'], x) for x in term_list]}
     printjson(result, output)
 
 
-def query(term_list, output):
+def query(term_list, config, output):
     result = {'action': 'get',
-              'key': [1 for term in config['terms'] if term in term_list and 0 if term not in term_list]}
+              'key': create_vector(config['terms'], term_list)}
     printjson(result, output)
 
 
-def report(data, output):
-    docs = [config['docs'][i] for i in range(len(data['results'])) if data['results'][i] > 0.2]
+def create_vector(all_terms, query_terms):
+    res = []
+    for term in all_terms:
+        if term in query_terms:
+            res.append(1)
+        else:
+            res.append(0)
+    return res
+
+
+def report(data, config, output):
+    docs = [{'name': config['docs'][i], 'activation': data['results'][i]} for i in range(len(data['results'])) if data['results'][i] > 0.2] if 'results' in data else []
     result = {'success': True, 'action': 'report', 'type': 'query' if config['is_query'] else 'build', 'results': docs}
     printjson(result, output)
 
@@ -82,19 +92,18 @@ def printjson(dic, output):
         outfile.write(text)
 
 
+def decide_io(status):
+    if status == 1:
+        return 'out.ui.json', 'in.text.json'
+    if status == 2:
+        return 'out.text.json', 'in.index.json'
+    return 'out.index.json', 'in.ui.json'
+
 if __name__ == '__main__':
     status = int(sys.argv[1])
-    input_file = os.path.curdir + '/json/'
-    output_file = os.path.curdir + '/json/'
-    if status == 1:
-        input_file = input_file + 'out.ui.json'
-        output_file= output_file+ 'in.text.json'
-    elif status == 2:
-        input_file = input_file + 'out.text.json'
-        output_file= output_file+ 'in.index.json'
-    else:
-        input_file = input_file + 'out.index.json'
-        output_file= output_file+ 'in.ui.json'
+    (i, o) = decide_io(status)
+    input_file = os.path.curdir + '/json/' + i
+    output_file = os.path.curdir + '/json/' + o
     t = time()
     config = {}
     try:

@@ -28,7 +28,7 @@ def build_targets(tfs, idfs):
 
 
 def normal_denominator(weights):
-    den = 0
+    den = 1
     for x in [pow(w, 2) for w in weights]:
         den += x
     return sqrt(den)
