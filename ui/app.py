@@ -42,6 +42,8 @@ def index():
             build(request.form['path'])
         elif 'query' in request.form:
             query()
+        elif 'other' in request.form:
+            session['query'] = False
         return redirect(url_for('index'))
     return render_template('index.html')
 
@@ -69,6 +71,7 @@ def query():
                 "query" : request.form['query'],
                 "count": request.form['count']}
         session['query_sent'] = True
+        session['query_msg'] = request.form['query']
         printjson(result)
     else:
         flash('No Model has been created')
@@ -106,7 +109,7 @@ def get_index():
                 session['query'] = True
                 session['query_sent'] = False
                 session['in_ts'] = in_data['time']
-                flash('Completed query in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
+                flash('Completed query '+ session['query_msg'] + ' in ' + str(in_data['time'] - session['out_ts']) + ' seconds')
                 if 'results' in in_data:
                     session['results'] = in_data['results']
             else:

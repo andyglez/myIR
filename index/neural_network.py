@@ -7,7 +7,8 @@ def train(neural_network, tf, idf):
     inputs = build_inputs(len(tf))
     targets = build_targets(tf, idf)
 
-    for i in range(100):
+    epochs = 1 if len(tf) > 10 else 10
+    for i in range(epochs):
         for input_vector, target_vector in zip(inputs, targets):
             backpropagate(neural_network, input_vector, target_vector)
     return neural_network

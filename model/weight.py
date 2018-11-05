@@ -1,25 +1,21 @@
-from converter import convert
-from os import scandir, urandom
 from math import log2, pow, sqrt
 from random import randint
 
 
-def tf(path, word, total):
+def tf(docs, word, total):
     result = []
-    for f in scandir(path):
-        text = convert(f)
-        value = text.count(word) / total
+    for doc in docs:
+        value = doc.count(word.upper()) / total
         result.append(value)
     return result
 
 
-def idf(path, word):
+def idf(docs, word):
     count_docs = 0
     count_exis = 0
-    for f in scandir(path):
-        text = convert(f)
+    for doc in docs:
         count_docs = count_docs + 1
-        if text.count(word) > 0:
+        if doc.count(word.upper()) > 0:
             count_exis = count_exis + 1
     return 0 if count_exis == 0 else log2(count_docs / count_exis)
 

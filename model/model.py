@@ -36,7 +36,8 @@ def scan(path, output):
         for f in [x for x in os.scandir(path) if os.path.isfile(x)]:
             plain = plain + convert(f)
         terms(plain, output)
-    except:
+    except Exception as e:
+        print(e)
         pass
 
 
@@ -51,13 +52,19 @@ def analize_model(term_list, config, output):
     config['terms'] = term_list
     printjson(config, config['current'])
 
+    docs = []
+    for f in os.scandir(config['path']):
+        docs.append(convert(f))
+
     t_len = len(term_list)
     d_len = len([x for x in os.scandir(config['path'])])
+    hidden_1 = 2 * t_len if t_len <= 100 else int(t_len / 50)
+    hidden_2 = hidden_1 if hidden_1 <= 10 else int(hidden_1 / 2)
     result = {'action': 'create',
               'path': config['path'],
-              'data': [matrix(t_len * 2, t_len), n_matrix(t_len * 2), matrix(d_len, t_len * 2)],
-              'tf': [tf(config['path'], x, t_len) for x in term_list],
-              'idf': [idf(config['path'], x) for x in term_list]}
+              'data': [matrix(hidden_1, t_len), matrix(hidden_2, hidden_1), matrix(d_len, hidden_2)],
+              'tf': [tf(docs, x, t_len) for x in term_list],
+              'idf': [idf(docs, x) for x in term_list]}
     printjson(result, output)
 
 
@@ -78,7 +85,7 @@ def create_vector(all_terms, query_terms):
 
 
 def report(data, config, output):
-    docs = [{'name': config['docs'][i], 'activation': data['results'][i]} for i in range(len(data['results'])) if data['results'][i] > 0.2] if 'results' in data else []
+    docs = [{'name': config['docs'][i], 'activation': data['results'][i]} for i in range(len(data['results'])) if data['results'][i] > 0.002] if 'results' in data else []
     res = sort(docs, config['query_count'])
     result = {'success': True, 'action': 'report', 'type': 'query' if config['is_query'] else 'build', 'results': res}
     printjson(result, output)

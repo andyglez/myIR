@@ -11,15 +11,6 @@ def build_inputs(length):
             else:
                 aux.append(0)
         res.append(aux)
-
-    a = []
-    b = []
-    for i in range(length):
-        a.append(1)
-        b.append(0)
-    res.append(a)
-    res.append(b)
-
     return res
 
 
@@ -30,16 +21,6 @@ def build_targets(tfs, idfs):
         for tf in tf_i:
             aux.append(tf * idf)
         res.append(normalize(aux))
-
-    a = []
-    b = []
-    for tf_i in tfs:
-        for tf in tf_i:
-            a.append(1)
-            b.append(0)
-        break
-    res.append(a)
-    res.append(b)
     return res
 
 def normalize(weights):
