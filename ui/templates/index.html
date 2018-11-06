@@ -83,6 +83,81 @@
     {% endif %}
     {% if session['query'] %}
     <div class="container">
+        <form role="form" method="post">
+            <div class="form-group fg-line">
+                <h2>Measures</h2>
+                <h4>Retrieved Relevants</h4>
+                <input type="number" class="form-control input-sm" min="0" value="1" placeholder="retrieved relevants" name="rr">
+                <h4>Unretrieved Relevants</h4>
+                <input type="number" class="form-control input-sm" min="0" value="1" placeholder="unretrieved relevants" name="nr">
+                <h4>Retrieved Irrelevants</h4>
+                <input type="number" class="form-control input-sm" min="0" value="1" placeholder="retrieved irrelevants" name="ri">
+                <h4>Unretrieved Irrelevants</h4>
+                <input type="number" class="form-control input-sm" min="0" value="1" placeholder="unretrieved irrelevants" name="ni">
+                <h4>Armonious Beta</h4>                
+                <input type="number" class="form-control input-sm" min="0" value="1" placeholder="armonious beta" name="beta">
+                <button type="submit" class="btn btn-primary btn-icon-text waves-effect" style="background-color:black">
+                        <i class="zmdi zmdi-arrow-forward"></i>
+                        Evaluate
+                </button>
+            </div>
+        </form>
+        {% if session['eval'] %}
+        <div class="card">
+            <div class="card-header">
+                <h2>Measure's Precisions</h2>
+            </div>
+            <div class="card-body card-padding">
+                <div class="listview">
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <h4>Precision = {{ session['precision'] }}</h4>>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <h4>Recall = {{ session['recall'] }}</h4>>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <h4>R-Precision = {{ session['r_precision'] }}</h4>>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <h4>F-Precision = {{ session['f_precision'] }}</h4>>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="lv-item">
+                        <div class="media">
+                            <div class="media-body">
+                                <div class="lv-title">
+                                    <h4>E-Precision = {{ session['e_precision'] }}</h4>>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="card">
             <div class="card-header">
                 <h2>Results</h2>

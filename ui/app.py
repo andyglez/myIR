@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, request, session, flash, redi
 import os
 import json
 import io
-import threading
+import math
 from time import time
 
 app = Flask(__name__)
@@ -26,6 +26,7 @@ def layout():
         session['out_ts'] = time()
     return redirect(url_for('index'))
 
+
 @app.route('/index', methods=['GET','POST'])
 def index():
     if not 'new' in session:
@@ -34,6 +35,7 @@ def index():
         return get_index()
     elif request.method == 'POST':
         session['results'] = []
+        session['eval'] = False
         if 'update' in request.form:
             flash('Model is being constructed, please wait and try again') 
         elif 'another' in request.form:
@@ -44,12 +46,16 @@ def index():
             query()
         elif 'other' in request.form:
             session['query'] = False
+        elif 'rr' in request.form:
+            evaluate()
         return redirect(url_for('index'))
     return render_template('index.html')
+
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
 
 def build(path):
     if os.path.exists(path):
@@ -65,6 +71,7 @@ def build(path):
     
     return 'build'
 
+
 def query():    
     if session['build']:
         result = {"action" : "query",
@@ -77,6 +84,7 @@ def query():
         flash('No Model has been created')
     return 'query'#redirect(url_for('index'))
 
+
 def printjson(data):
     with io.open(os.path.pardir + '/json/out.ui.json', 'w', encoding='utf8') as outfile:
         data['time'] = time()
@@ -85,6 +93,7 @@ def printjson(data):
                     indent=4, sort_keys=True,
                     separators=(',', ': '), ensure_ascii=False)
         outfile.write(text)
+
 
 def readjson():
     try:
@@ -124,23 +133,29 @@ def get_index():
 def build_completion(data):
     return valid_time(data) and has_fields(data) and data['type'] == 'build' and data['success']
 
+
 def query_completion(data):
     return valid_time(data) and has_fields(data) and data['type'] == 'query' and data['success']
+
 
 def valid_time(data):
     return 'time' in data and data['time'] > session['in_ts']
 
+
 def has_fields(data):
     return 'type' in data and 'success' in data
 
-@app.route('/eval')
-def eval():
-    querys = [
-        {'query': 'leon', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
-        {'query': 'duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
-        {'query': 'fox', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
-        {'query': 'leon fox duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
-        {'query': 'leon duck', 'measures': {'precision': 1, 'rec': 1, 'F': 1, 'E': 1, 'R' : 1}},
-        {'query': 'leon andy', 'measures': {'precision': 0, 'rec': 0, 'F': 0, 'E': 0, 'R' : 0}}]
-    session['eval'] = querys
-    return render_template('eval.html')
+
+def evaluate():
+    session['eval'] = True
+    rr = int(request.form['rr'])
+    nr = int(request.form['nr'])
+    ri = int(request.form['ri'])
+    ni = int(request.form['nr'])
+    beta = math.pow(int(request.form['beta']), 2)
+    session['precision'] = rr / (rr + ri)
+    session['recall'] = rr / (rr + nr)
+    session['r_precision'] = session['precision'] * session['recall']
+    session['f_precision'] = (2 * session['precision'] * session['recall']) / (session['precision'] + session['recall'])
+    session['e_precision'] = ((1 + beta) * session['precision'] * session['recall']) / ((beta * session['precision']) + session['recall'])
+    return render_template('index.html')
