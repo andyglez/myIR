@@ -107,58 +107,75 @@ Creada en {\textit{Python}} se apoya en su m\'odulo {\textit{NLTK}} que signific
 en el procesamiento de lenguaje natural y, por consecuencia de texto, en \'el se encuentran distintos subm\'odulos, entre ellos los
 necesarios son: {\textit{corpus}} y {\textit{stem}}.
 
-\subsection{M\'odulo de \'Indices}
-
-Es, b\'asicamente, un diccionario en forma de \'arbol en el que cada llave es un nodo que apunta hacia otra llave en el diccionario 
-hasta que encuentra un nodo hoja que apunta hacia un documento.\\
-Esta estructura de datos se crea en memoria y se crea seg\'un indica el m\'odulo de modelado de tal forma que evita los c\'alculos
-matriciales como su definici\'on exhibe y la propagaci\'on se realiza nodo a nodo seg\'un sus aristas de peso incidiendo sobre la
-activaci\'on de los mismos.
-
-\subsubsection{Limitaciones}
-El costo en memoria asciende en gran pendiente debido a la definici\'on combinatoria de los nodos y por tanto, est\'a limitado a indizar
-relativamente pocos t\'erminos.
-
-\subsubsection{Dependencias}
-
-Creada en {\textit{Python}} no tiene ning\'un requerimento especial.
-
 \subsection{M\'odulo de Modelado}
 
-Est\'a creado con la intenci\'on de modelar una red neuronal para la recuperaci\'on de informaci\'on, siendo un grafo conexo y ac\'iclico tal que 
-a los efectos de implementaci\'on es un \'arbol.\\
-Entonces sean $X_1$, $X_2$ ... $X_n$ los t\'erminos a indizar en nuestra red neuronal, luego decimos que las combinaciones de, a lo sumo,
-cinco t\'erminos conforman los nodos de la primera capa, la siguiente ser\'an las combinaciones de cuatro t\'erminos y as\'i sucesivamente
-hasta llegar a los t\'erminos unitarios que representar\'an la \'ultima capa de la capa oculta hasta llegar a los nodos documentos.\\
-En la siguiente figura se puede observar lo que sucede para tres t\'erminos.
+Es el encargado de controlar el tr\'afico de datos necesarios para su computaci\'on. En primera instancia, hacia el m\'odulo de procesamiento
+de texto realiza la conversi\'on de contenidos de ficheros a texto plano o una simple cadena de caracteres. Al tener la lista de todos los t\'erminos
+a indizar los vectoriza en valores entre 0 y 1 y construye el modelo de redes neuronales.\\
+Se define una red neuronal como una lista de matrices de pesos que representan las aristas entre nodos de capas adyacentes. Como prop\'osito
+de generalizaci\'on, como se ver\'a adelante, se definen cuatro capas como se indica en la siguiente figura.
 
 {\includegraphics[]{model}}
 {\hfil\flushright{\textit{Fig 3. Ejemplo de definici\'on del modelo}}}
 
-El modelo est\'a implementado de tal forma que desde el punto de vista de la interfaz de usuario es un proceso unitario, es decir, en un ciclo de
+En el vector de la capa de entrada est\'an los posibles t\'erminos de consulta, esos son todos los posibles t\'erminos a indizar y en el vector de la
+capa de salida se encuentran los documentos posibles. Entonces para el momento de creaci\'on las matrices de pesos constar\'an de vectores
+normalizados de n\'umeros aleatorios y se mantiene, adem\'as, los valores reales de {\textit{tf}} e {\textit{idf}} que ser\'an utilizados para 
+obtener relaciones de pesos de aristas m\'as exactas.\\
+Una vez finalizada la creaci\'on del modelo tambi\'en cumplir\'a con funciones vitales para el m\'odulo de \'indices, como por ejemplo, la consulta
+no se realiza directamente del t\'ermino sino que se hace una conversi\'on de este hacia un vector de 0 y 1 que indican si la palabra existe en dicha
+consulta o no. Este vector ser\'a el par\'ametro de entrada de la red neuronal.\\
+Finalmente, el modelo est\'a implementado de tal forma que desde el punto de vista de la interfaz de usuario es un proceso unitario, es decir, en un ciclo de
 ejecuci\'on obtiene su entrada, env\'ia y recibe lo necesario de los siguientes m\'odulos, primero procesa textos, luego crea o busca \'indices y,
 finalmente, emite su salida hacia la interfaz. Esto significa que su apariencia es la siguiente:
 
 {\includegraphics[]{appereance}}
 {\hfil\flushright{\textit{Fig 4. Apariencia en ejecuci\'on del modelo}}}
 
-\section{Resultados}
-Adyacente al proyecto se encuentra un directorio de pruebas con pocos t\'erminos con el cual el sistema obtiene la m\'axima precisi\'on tanto en
-recuperaci\'on como en el ordenamiento por relevancia, sin embargo a medida que aumenta la cantidad de t\'erminos a indizar por documentos
-tanto el tiempo en ejecuci\'on como el costo en memoria se disparan exponencialmente debido al costo factorial de la combinatoria de t\'erminos
-para construir los nodos.\\
-Se encuentra que el sistema no es pr\'actico debido a la gran limitante computacional sin embargo, es te\'oricamente exacto ya que recubre todos
-los posibles casos sobre los que un usuario promedio ejercer\'ia una acci\'on mientras que se mantiene funcional.\\
-La interfaz de usuario cumple con los principios de dise\~no antes mencionados y el procesamiento de texto utiliza herramientas altamente optimizadas,
-mientras la implementaci\'on del diccionario de \'indices se define seg\'un el modelo le indique, en lo que a funciones de diccionario implique es, tambi\'en,
-altamente optimizada.
+
+\subsection{M\'odulo de \'Indices}
+
+Este modelo tiene dos instancias fundamentales, cuando le es encomendada la tarea de finalizar la creaci\'on del modelo y cuando se realiza una consulta.
+Se les dice fundamentales ya que el resto depende directamente del funcionamiento de estas dos.\\
+Cuando construye la red neuronal se tiene la matriz de pesos descrita en la secci\'on anterior y se tienen los valores de {\textit{tf}} e {\textit{idf}},
+entonces se quiere buscar la convergencia de la red, es decir, que dada una consulta sea capaz de retornar la probabilidad de relevancia a un documento.
+Es, de tal forma, que se asume que los pesos aleatorios predefinidos no son buenos valores para tal objetivo, entonces dados los otros dos par\'ametros
+del m\'odulo, se obtendr\'an la relevancia sobre los documentos, por tanto, para toda consulta unitaria, es decir, el vector de entrada que contiene solo
+un 1 y el resto 0, se conocen sus valores de salida y se comienza la evaluaci\'on de nuestra red.\\
+Se realiza el algoritmo hacia adelante, se eval\'ua el error y de acuerdo a la direcci\'on del gradiente negativo se recalculan los pesos y se propaga el error
+en la red. Es importante destacar que la funci\'on de activaci\'on utilizada es la sigmoidal, tal que su derivada es la utilizada para la propagaci\'on. Esta es:\\
+${\Delta}w{^{(t+1)}}_{i,j} = lrate * Err_{j} * o_j * (1 - o_j) * o_i$\\
+Luego de evaluar un n\'umero finito de iteraciones, se establece el modelo de redes neuronales y permite analizar consultas. Para este caso, no se calcula
+el error y se propaga para dar mejores resultados, sino que de manera directa se corre el algoritmo hacia adelante y se emite una salida.\\
+Las salidas del m\'odulo son vectores de n\'umeros entre 0 y 1, que representan la activaci\'on del documento con respecto a la consulta. Posteriormente,
+estas son procesadas y englobadas con los datos requeridos a la salida real del sistema como puede ser el nombre del documento.
+
+\subsubsection{Limitaciones}
+El costo en memoria depende directamente de la cantidad de t\'erminos a indizar, ya que las matrices tienen medidas variables respecto a ello por ende
+para un gran n\'umero de t\'erminos puede ser altamente costoso y no solo en memoria ya que las multiplicaciones matriciales conllevan un gran uso de 
+CPU y por tanto, de tiempo computacional.
+
+\subsubsection{Dependencias}
+
+Creada en {\textit{Python}} no tiene ning\'un requerimento especial.
 
 \section{Conclusiones}
-Se encuentra un gran potencial en los sistemas de estas caracter\'isticas, especialmente aplicando el modelo de redes neuronales, con lo cual queda 
-pendiente optimizar la combinaci\'on de nodos o la subdivisi\'on de consultas para obtener tales resultados para \'indices de t\'erminos mayores mientras
-que se ha cumplido con los requisitos de implementaci\'on a la vez que es te\'oricamente correcto y exacto con lo cual se obtienen los mejores resultados.
+Un n\'umero estratosf\'erico de aplicaciones tienen las redes neuronales y constantemente se suman nuevas. Mientras, de manera rudimentaria, creamos
+nuestra primera red neuronal con la cual obtenemos resultados satisfactorios. Se ha comprobado la teor\'a del \'algebra lineal aplicada a este modelo y su
+similaridad con el modelo vectorial para inicializar sus valores de c\'omputo, adem\'as de la raz\'on por la cual es llamada un paradigma propio dentro de la
+teor\'ia de la recuperaci\'on de informaci\'on.\\
+Es importante destacar que este trabajo no termina a\'un, ya que como meta inmediata se encuentran temas como la retroalimentaci\'on dada las consultas
+para extender su propia definici\'on de red neuronal.\\
+En conjunto a la evaluaci\'on se ha comprobado que para mayores cantidades de t\'erminos y documentos el sistema obtiene mejores resultados en cuanto a
+su exactitud, y por tanto para valores peque\~nos es m\'as propenso a retornar documentos que no son relevantes dada cualquier consulta.\\
 
 \begin{thebibliography}{1}
+
+\bibitem{data}
+Grus, J:
+Data Science from Scratch.
+O'Reilly Media Inc., 2015
+Sebastopol, CA, USA.
 
 \bibitem{mir}
 Baeza-Yates, R., Ribeiro-Neto, B.:

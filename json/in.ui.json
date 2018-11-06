@@ -2,27 +2,27 @@
     "action": "report",
     "results": [
         {
-            "activation": 0.0810346733228924,
-            "name": "document4.txt"
-        },
-        {
-            "activation": 0.08075495651084817,
-            "name": "document1.txt"
-        },
-        {
-            "activation": 0.08049559804261923,
+            "activation": 0.07652756050598512,
             "name": "document2.txt"
         },
         {
-            "activation": 0.0798029473026814,
+            "activation": 0.07638086730636558,
+            "name": "document3.txt"
+        },
+        {
+            "activation": 0.0762221411002711,
             "name": "document5.txt"
         },
         {
-            "activation": 0.07976528572955024,
-            "name": "document3.txt"
+            "activation": 0.07573848211488286,
+            "name": "document1.txt"
+        },
+        {
+            "activation": 0.07494206842600465,
+            "name": "document4.txt"
         }
     ],
     "success": true,
-    "time": 1541510681.4370277,
+    "time": 1541516677.940495,
     "type": "query"
 }
